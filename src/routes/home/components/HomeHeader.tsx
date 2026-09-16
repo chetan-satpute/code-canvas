@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router';
 
+import BrandMark from '#components/BrandMark.tsx';
 import Icon from '#components/Icon.tsx';
-import BrandMark from '#routes/home/components/BrandMark.tsx';
 import cn from '#utils/cn.ts';
 
 const repositoryUrl = 'https://github.com/chetan-satpute/code-canvas';
