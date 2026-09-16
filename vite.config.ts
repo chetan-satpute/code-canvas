@@ -21,14 +21,16 @@ export default defineConfig({
       // inject a registration script into index.html.
       injectRegister: null,
 
-      // public/site.webmanifest is hand-written and linked from index.html;
+      // public/manifest.json is hand-written and linked from index.html;
       // see docs/icon.md for how its icons are produced.
       manifest: false,
 
       workbox: {
         // The build output plus everything copied from public/. The manifest
-        // is listed because it is not one of Workbox's default extensions.
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        // is named on its own because .json is not one of Workbox's default
+        // extensions, and adding json to the brace list would precache every
+        // other JSON file the build happens to emit.
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}', 'manifest.json'],
 
         // Every route is served by the one document, so an offline visit to
         // /array-linear-search has to resolve to it.

@@ -43,7 +43,7 @@ Sources live in `assets/icon/` and are not served. The served assets are in
 | `public/android-chrome-192x192.png` | `public/favicon.svg`            | Manifest icon.                                                                    |
 | `public/android-chrome-512x512.png` | `public/favicon.svg`            | Manifest icon, and the install prompt's large icon.                               |
 | `public/maskable-icon-512x512.png`  | `assets/icon/icon-maskable.svg` | Manifest icon declared `purpose: maskable`, which Android crops to its own shape. |
-| `public/site.webmanifest`           | —                               | Names the app, the three manifest icons, and the theme and background colors.     |
+| `public/manifest.json`              | —                               | Names the app, the three manifest icons, and the theme and background colors.     |
 
 Three of the sources exist because one drawing cannot serve every size and
 every mask:

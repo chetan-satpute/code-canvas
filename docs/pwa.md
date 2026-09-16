@@ -8,7 +8,7 @@ to get right for any of it to work.
 
 ## The manifest
 
-`public/site.webmanifest` is hand-written and linked from `index.html`. It is
+`public/manifest.json` is hand-written and linked from `index.html`. It is
 not generated: its icon set is the output of the process described in
 [icon.md](icon.md), and regenerating it from a plugin config would put those
 files' names in two places. `vite-plugin-pwa` is therefore configured with
@@ -28,9 +28,11 @@ weight:
 
 **The precache manifest** lists the hashed build output plus everything copied
 from `public/`, which is what makes the app work with no network. The glob
-includes `webmanifest` explicitly because it is not one of Workbox's default
-extensions, and the manifest is the one file a browser re-fetches when deciding
-whether an installed app has changed.
+names `manifest.json` on its own because `.json` is not one of Workbox's
+default extensions, and putting `json` in the brace list would precache every
+other JSON file the build happens to emit. The manifest has to be in there: it
+is the one file a browser re-fetches when deciding whether an installed app has
+changed.
 
 **`navigateFallback: '/index.html'`** exists because every route is served by
 the same document. Without it a cold offline visit to `/array-linear-search`
