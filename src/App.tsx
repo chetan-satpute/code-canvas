@@ -1,9 +1,9 @@
+import { RouterProvider } from '@tanstack/react-router';
+
+import { router } from '#router.tsx';
+
 function App() {
-  return (
-    <div className="flex h-screen w-screen items-center justify-center">
-      <h1 className="font-en-display text-xl">Code Canvas</h1>
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
