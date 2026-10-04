@@ -1,0 +1,509 @@
+/*
+ * Dark theme generated from the source portrait:
+ * deep indigo hair, sapphire saree/eyes, gold jewelry,
+ * ivory drape, garnet bindi, cosmic midnight background.
+ *
+ * Structure (Tailwind v4.3, CSS-first):
+ *   :root          real token values live here — inspect/override these
+ *   @theme inline  maps each token into Tailwind's utility namespace,
+ *                  so bg-primary, text-muted-foreground, bg-indigo-400,
+ *                  ring-ring, border-input etc. all work out of the box
+ *   @layer base    scrollbar styling, driven by the --scrollbar-* tokens
+ */
+
+@import 'tailwindcss';
+
+:root {
+  /* ---------- Primitive scales — the real values ---------- */
+  /* indigo — hair / outer robe — the dominant deep violet-blue (seed #232A52) */
+  --indigo-25: #fafbfc;
+  --indigo-50: #f4f5f8;
+  --indigo-100: #e8e9f0;
+  --indigo-150: #d4d7e8;
+  --indigo-200: #bec3dc;
+  --indigo-300: #949ccc;
+  --indigo-400: #6572bd;
+  --indigo-500: #4755a6;
+  --indigo-600: #232a52;
+  --indigo-700: #2b356e;
+  --indigo-800: #202853;
+  --indigo-900: #161b39;
+  --indigo-950: #0e1125;
+  --indigo-975: #080a16;
+
+  /* sapphire — saree blue + iris color — cooler mid-blue (seed #3E6DAE) */
+  --sapphire-25: #fafbfc;
+  --sapphire-50: #f4f6f8;
+  --sapphire-100: #e7ebf1;
+  --sapphire-150: #d2dcea;
+  --sapphire-200: #bccadf;
+  --sapphire-300: #8fabd1;
+  --sapphire-400: #5d89c5;
+  --sapphire-500: #3e6dae;
+  --sapphire-600: #315991;
+  --sapphire-700: #254674;
+  --sapphire-800: #1b3557;
+  --sapphire-900: #13243d;
+  --sapphire-950: #0c1727;
+  --sapphire-975: #070e17;
+
+  /* gold — jewelry metal — warm highlight (seed #C9A24E) */
+  --gold-25: #fcfcfa;
+  --gold-50: #f9f7f3;
+  --gold-100: #f1eee6;
+  --gold-150: #ebe3d1;
+  --gold-200: #e1d5b9;
+  --gold-300: #d5be8b;
+  --gold-400: #cca757;
+  --gold-500: #c9a24e;
+  --gold-600: #97752b;
+  --gold-700: #785d21;
+  --gold-800: #5b4618;
+  --gold-900: #3f3010;
+  --gold-950: #291f0a;
+  --gold-975: #181306;
+
+  /* pearl — ivory drape + mandala glow — warm off-white (seed #F4EFE2) */
+  --pearl-25: #fcfcfa;
+  --pearl-50: #f8f7f4;
+  --pearl-100: #f4efe2;
+  --pearl-150: #e9e3d3;
+  --pearl-200: #ded5bc;
+  --pearl-300: #cfbe91;
+  --pearl-400: #c3a760;
+  --pearl-500: #ac8e41;
+  --pearl-600: #8f7533;
+  --pearl-700: #725d27;
+  --pearl-800: #56461d;
+  --pearl-900: #3b3014;
+  --pearl-950: #261f0d;
+  --pearl-975: #171308;
+
+  /* midnight — cosmic background — near-black, faint blue undertone (seed #0D0E1A) */
+  --midnight-25: #fbfbfc;
+  --midnight-50: #f5f5f7;
+  --midnight-100: #e9eaef;
+  --midnight-150: #d9dae2;
+  --midnight-200: #c6c7d4;
+  --midnight-300: #a5a7bb;
+  --midnight-400: #8284a1;
+  --midnight-500: #666987;
+  --midnight-600: #53556e;
+  --midnight-700: #424357;
+  --midnight-800: #313341;
+  --midnight-900: #22232d;
+  --midnight-950: #0d0e1a;
+  --midnight-975: #0d0d11;
+
+  /* garnet — bindi / throat gem — deep red (seed #8C2A44) */
+  --garnet-25: #fcfafb;
+  --garnet-50: #f9f3f5;
+  --garnet-100: #f2e6e9;
+  --garnet-150: #ebd0d8;
+  --garnet-200: #e1b9c4;
+  --garnet-300: #d58a9e;
+  --garnet-400: #cc5676;
+  --garnet-500: #b63759;
+  --garnet-600: #8c2a44;
+  --garnet-700: #792038;
+  --garnet-800: #5b1729;
+  --garnet-900: #3f101c;
+  --garnet-950: #290a12;
+  --garnet-975: #19060b;
+
+  /* amber — derived warm-orange (skin/gold blend) — warning family (seed #D98A3D) */
+  --amber-25: #fdfbfa;
+  --amber-50: #f9f6f3;
+  --amber-100: #f3ece5;
+  --amber-150: #efdecd;
+  --amber-200: #e6cdb4;
+  --amber-300: #dfaf81;
+  --amber-400: #db9048;
+  --amber-500: #d98a3d;
+  --amber-600: #a5601c;
+  --amber-700: #844c15;
+  --amber-800: #64390f;
+  --amber-900: #45270a;
+  --amber-950: #2d1906;
+  --amber-975: #1b0f04;
+
+  /* teal — derived cool complement to the blues — success family (seed #2E8C82) */
+  --teal-25: #fafcfc;
+  --teal-50: #f4f9f8;
+  --teal-100: #e7f1f0;
+  --teal-150: #d1eae8;
+  --teal-200: #bae0dc;
+  --teal-300: #8dd3cc;
+  --teal-400: #5ac9bd;
+  --teal-500: #2e8c82;
+  --teal-600: #2d9489;
+  --teal-700: #23766d;
+  --teal-800: #195952;
+  --teal-900: #113e39;
+  --teal-950: #0b2825;
+  --teal-975: #071816;
+
+  /* ---------- Semantic tokens — reference the primitives above ---------- */
+
+  /* Base canvas */
+  --background: var(--midnight-950);
+  --foreground: var(--pearl-100);
+
+  /* Elevation */
+  --surface-1: var(--midnight-900);
+  --surface-2: var(--midnight-800);
+  --surface-3: var(--midnight-700);
+
+  /* Card & popover */
+  --card: var(--midnight-900);
+  --card-foreground: var(--pearl-50);
+  --popover: var(--midnight-800);
+  --popover-foreground: var(--pearl-50);
+
+  /* Primary (indigo) */
+  --primary: var(--indigo-500);
+  --primary-hover: var(--indigo-400);
+  --primary-active: var(--indigo-600);
+  --primary-foreground: var(--pearl-50);
+
+  /* Secondary (sapphire) */
+  --secondary: var(--sapphire-600);
+  --secondary-hover: var(--sapphire-500);
+  --secondary-active: var(--sapphire-700);
+  --secondary-foreground: var(--pearl-50);
+
+  /* Muted */
+  --muted: var(--midnight-800);
+  --muted-foreground: var(--midnight-300);
+
+  /* Accent (gold) */
+  --accent: var(--gold-400);
+  --accent-hover: var(--gold-300);
+  --accent-active: var(--gold-500);
+  --accent-foreground: var(--midnight-950);
+
+  /* Destructive */
+  --destructive: var(--garnet-500);
+  --destructive-hover: var(--garnet-400);
+  --destructive-active: var(--garnet-600);
+  --destructive-foreground: var(--pearl-50);
+
+  /* Success */
+  --success: var(--teal-400);
+  --success-hover: var(--teal-300);
+  --success-active: var(--teal-500);
+  --success-foreground: var(--midnight-950);
+
+  /* Warning */
+  --warning: var(--amber-500);
+  --warning-hover: var(--amber-400);
+  --warning-active: var(--amber-600);
+  --warning-foreground: var(--midnight-950);
+
+  /* Info */
+  --info: var(--sapphire-400);
+  --info-hover: var(--sapphire-300);
+  --info-active: var(--sapphire-500);
+  --info-foreground: var(--midnight-950);
+
+  /* Structure */
+  --border: var(--midnight-700);
+  --input: var(--midnight-500);
+  --ring: var(--indigo-400);
+
+  /* Scrollbar — transparent track so it sits on any surface (page, card,
+     popover); thumb brightens on hover and takes the ring colour while
+     dragging */
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: var(--midnight-600);
+  --scrollbar-thumb-hover: var(--midnight-400);
+  --scrollbar-thumb-active: var(--indigo-400);
+
+  /* ---------- Typography — body / display / script per language.
+     Kalam carries both scripts (it ships Latin + Devanagari glyphs), so it
+     covers font-en-script and font-hi-script with one family.
+     Noto fallbacks are a safety net if the primary Devanagari face fails
+     to load. Load weights via @font-face, @import, or next/font — see the
+     note at the bottom of this file. ---------- */
+
+  /* English — Spectral (body) / Spectral SC (display, small caps) / Kalam (script, handwritten) */
+  --font-en: 'Spectral', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-en-display: 'Spectral SC', ui-serif, Georgia, serif;
+  --font-en-script: 'Kalam', cursive;
+
+  /* Hindi — Laila (body + display — its own designers call it a display
+     face that also handles short text) / Kalam (script, handwritten) */
+  --font-hi: 'Laila', 'Noto Sans Devanagari', sans-serif;
+  --font-hi-display: 'Laila', 'Noto Sans Devanagari', sans-serif;
+  --font-hi-script: 'Kalam', 'Noto Sans Devanagari', cursive;
+
+  /* Sanskrit — Tiro Devanagari Sanskrit (single weight, scholarly serif) */
+  --font-sa: 'Tiro Devanagari Sanskrit', 'Noto Serif Devanagari', serif;
+
+  /* Code */
+  --font-code: 'Ubuntu Mono', ui-monospace, 'SFMono-Regular', monospace;
+}
+
+@theme inline {
+  /* ---------- Primitives → Tailwind utilities (bg-indigo-400, text-gold-300, …) ---------- */
+  --color-indigo-25: var(--indigo-25);
+  --color-indigo-50: var(--indigo-50);
+  --color-indigo-100: var(--indigo-100);
+  --color-indigo-150: var(--indigo-150);
+  --color-indigo-200: var(--indigo-200);
+  --color-indigo-300: var(--indigo-300);
+  --color-indigo-400: var(--indigo-400);
+  --color-indigo-500: var(--indigo-500);
+  --color-indigo-600: var(--indigo-600);
+  --color-indigo-700: var(--indigo-700);
+  --color-indigo-800: var(--indigo-800);
+  --color-indigo-900: var(--indigo-900);
+  --color-indigo-950: var(--indigo-950);
+  --color-indigo-975: var(--indigo-975);
+
+  --color-sapphire-25: var(--sapphire-25);
+  --color-sapphire-50: var(--sapphire-50);
+  --color-sapphire-100: var(--sapphire-100);
+  --color-sapphire-150: var(--sapphire-150);
+  --color-sapphire-200: var(--sapphire-200);
+  --color-sapphire-300: var(--sapphire-300);
+  --color-sapphire-400: var(--sapphire-400);
+  --color-sapphire-500: var(--sapphire-500);
+  --color-sapphire-600: var(--sapphire-600);
+  --color-sapphire-700: var(--sapphire-700);
+  --color-sapphire-800: var(--sapphire-800);
+  --color-sapphire-900: var(--sapphire-900);
+  --color-sapphire-950: var(--sapphire-950);
+  --color-sapphire-975: var(--sapphire-975);
+
+  --color-gold-25: var(--gold-25);
+  --color-gold-50: var(--gold-50);
+  --color-gold-100: var(--gold-100);
+  --color-gold-150: var(--gold-150);
+  --color-gold-200: var(--gold-200);
+  --color-gold-300: var(--gold-300);
+  --color-gold-400: var(--gold-400);
+  --color-gold-500: var(--gold-500);
+  --color-gold-600: var(--gold-600);
+  --color-gold-700: var(--gold-700);
+  --color-gold-800: var(--gold-800);
+  --color-gold-900: var(--gold-900);
+  --color-gold-950: var(--gold-950);
+  --color-gold-975: var(--gold-975);
+
+  --color-pearl-25: var(--pearl-25);
+  --color-pearl-50: var(--pearl-50);
+  --color-pearl-100: var(--pearl-100);
+  --color-pearl-150: var(--pearl-150);
+  --color-pearl-200: var(--pearl-200);
+  --color-pearl-300: var(--pearl-300);
+  --color-pearl-400: var(--pearl-400);
+  --color-pearl-500: var(--pearl-500);
+  --color-pearl-600: var(--pearl-600);
+  --color-pearl-700: var(--pearl-700);
+  --color-pearl-800: var(--pearl-800);
+  --color-pearl-900: var(--pearl-900);
+  --color-pearl-950: var(--pearl-950);
+  --color-pearl-975: var(--pearl-975);
+
+  --color-midnight-25: var(--midnight-25);
+  --color-midnight-50: var(--midnight-50);
+  --color-midnight-100: var(--midnight-100);
+  --color-midnight-150: var(--midnight-150);
+  --color-midnight-200: var(--midnight-200);
+  --color-midnight-300: var(--midnight-300);
+  --color-midnight-400: var(--midnight-400);
+  --color-midnight-500: var(--midnight-500);
+  --color-midnight-600: var(--midnight-600);
+  --color-midnight-700: var(--midnight-700);
+  --color-midnight-800: var(--midnight-800);
+  --color-midnight-900: var(--midnight-900);
+  --color-midnight-950: var(--midnight-950);
+  --color-midnight-975: var(--midnight-975);
+
+  --color-garnet-25: var(--garnet-25);
+  --color-garnet-50: var(--garnet-50);
+  --color-garnet-100: var(--garnet-100);
+  --color-garnet-150: var(--garnet-150);
+  --color-garnet-200: var(--garnet-200);
+  --color-garnet-300: var(--garnet-300);
+  --color-garnet-400: var(--garnet-400);
+  --color-garnet-500: var(--garnet-500);
+  --color-garnet-600: var(--garnet-600);
+  --color-garnet-700: var(--garnet-700);
+  --color-garnet-800: var(--garnet-800);
+  --color-garnet-900: var(--garnet-900);
+  --color-garnet-950: var(--garnet-950);
+  --color-garnet-975: var(--garnet-975);
+
+  --color-amber-25: var(--amber-25);
+  --color-amber-50: var(--amber-50);
+  --color-amber-100: var(--amber-100);
+  --color-amber-150: var(--amber-150);
+  --color-amber-200: var(--amber-200);
+  --color-amber-300: var(--amber-300);
+  --color-amber-400: var(--amber-400);
+  --color-amber-500: var(--amber-500);
+  --color-amber-600: var(--amber-600);
+  --color-amber-700: var(--amber-700);
+  --color-amber-800: var(--amber-800);
+  --color-amber-900: var(--amber-900);
+  --color-amber-950: var(--amber-950);
+  --color-amber-975: var(--amber-975);
+
+  --color-teal-25: var(--teal-25);
+  --color-teal-50: var(--teal-50);
+  --color-teal-100: var(--teal-100);
+  --color-teal-150: var(--teal-150);
+  --color-teal-200: var(--teal-200);
+  --color-teal-300: var(--teal-300);
+  --color-teal-400: var(--teal-400);
+  --color-teal-500: var(--teal-500);
+  --color-teal-600: var(--teal-600);
+  --color-teal-700: var(--teal-700);
+  --color-teal-800: var(--teal-800);
+  --color-teal-900: var(--teal-900);
+  --color-teal-950: var(--teal-950);
+  --color-teal-975: var(--teal-975);
+
+  /* ---------- Semantics → Tailwind utilities (bg-primary, text-foreground, …) ---------- */
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-active: var(--primary-active);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-hover: var(--secondary-hover);
+  --color-secondary-active: var(--secondary-active);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-active: var(--accent-active);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-hover: var(--destructive-hover);
+  --color-destructive-active: var(--destructive-active);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-success: var(--success);
+  --color-success-hover: var(--success-hover);
+  --color-success-active: var(--success-active);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-warning: var(--warning);
+  --color-warning-hover: var(--warning-hover);
+  --color-warning-active: var(--warning-active);
+  --color-warning-foreground: var(--warning-foreground);
+
+  --color-info: var(--info);
+  --color-info-hover: var(--info-hover);
+  --color-info-active: var(--info-active);
+  --color-info-foreground: var(--info-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* ---------- Typography → Tailwind utilities (font-en, font-en-display, …) ---------- */
+  --font-en: var(--font-en);
+  --font-en-display: var(--font-en-display);
+  --font-en-script: var(--font-en-script);
+  --font-hi: var(--font-hi);
+  --font-hi-display: var(--font-hi-display);
+  --font-hi-script: var(--font-hi-script);
+  --font-sa: var(--font-sa);
+  --font-code: var(--font-code);
+
+  /* Alias Tailwind's built-in mono namespace to the same stack, so the
+     default font-mono utility and any <code>/<pre> resets from plugins
+     like @tailwindcss/typography pick up Ubuntu Mono automatically. */
+  --font-mono: var(--font-code);
+}
+
+/* ---------- Scrollbars — driven by the --scrollbar-* tokens in :root ---------- */
+
+@layer base {
+  :root {
+    /* Native scrollbars and form controls render dark anywhere the custom
+       styling doesn't reach */
+    color-scheme: dark;
+  }
+
+  /* Firefox, and any browser without the WebKit pseudo-elements.
+     Kept behind @supports because in current Chromium, setting
+     scrollbar-color or scrollbar-width disables the ::-webkit-scrollbar
+     rules below (and with them the rounded thumb and hover states). */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+  }
+
+  /* Chromium, Safari */
+  ::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  ::-webkit-scrollbar-track,
+  ::-webkit-scrollbar-corner {
+    background: var(--scrollbar-track);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb);
+    background-clip: content-box;
+    border: 3px solid transparent; /* insets the thumb to a 6px pill */
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background-color: var(--scrollbar-thumb-active);
+  }
+}
+
+/*
+ * Dark-mode-first: there's no light/dark split above, the primitives
+ * themselves define one deliberate dark palette. To add a light mode
+ * later, override the *semantic* variables (not the primitives) inside
+ * a `.light` class or `@media (prefers-color-scheme: light)` block —
+ * same pattern shadcn/ui uses for its .dark override. Set
+ * `color-scheme: light` in that same block and re-point the four
+ * --scrollbar-* tokens.
+ *
+ * Fonts aren't loaded by this file — pull them in however this project
+ * already loads fonts (self-hosted @font-face, next/font, a bundler
+ * plugin, etc). If you're loading from Google Fonts directly, this link
+ * covers every weight referenced above:
+ *
+ *   https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Spectral+SC:wght@400;500;600&family=Laila:wght@400;500;600;700&family=Kalam:wght@300;400;700&family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap
+ *
+ * Caveat: Laila, Kalam and Tiro Devanagari Sanskrit each ship full
+ * Devanagari glyph sets, which is real payload (tens of KB each). If
+ * this becomes a Lighthouse concern, subset to the glyphs actually used
+ * (Google Fonts' `text=` param, or `pyftsubset`/`glyphhanger` for
+ * self-hosted files) rather than dropping a language's font wholesale.
+ */
