@@ -11,6 +11,7 @@ import AlgorithmArguments from './components/AlgorithmArguments.tsx';
 import CallStackCard from './components/CallStackCard.tsx';
 import CanvasCard from './components/CanvasCard.tsx';
 import CodeCard from './components/CodeCard.tsx';
+import ExploreHeader from './components/ExploreHeader.tsx';
 import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
@@ -92,16 +93,20 @@ const placeholderVariables: [string, string][] = [
  *
  * lg+: a row of the canvas column (canvas over that cell, 3:2) and a
  * fixed-width code card beside it. The row fills the viewport without
- * scrolling, but the code card's header and arguments never shrink (about
- * 375px), so the page gets a minimum height that keeps Run and a few lines of
- * code visible. Shorter windows scroll the whole page instead of clipping Run.
+ * scrolling, but the page header (64px) and the code card's header and
+ * arguments (about 375px) never shrink, so the page gets a minimum height that
+ * keeps Run and a few lines of code visible. Shorter windows scroll the whole
+ * page instead of clipping Run.
  *
- * Below lg the page is one scrolling column. The canvas column is `contents`
- * there, so its two children join that column directly, and `order-last`
- * moves the cell below the code card.
+ * Below lg the page is one column and the document itself scrolls, header
+ * included. Scrolling `main` instead would put its scrollbar inside the
+ * right padding, leaving the cards wider of the left edge than the right and
+ * out of line with the header. The canvas column is `contents` there, so its
+ * two children join that column directly, and `order-last` moves the cell
+ * below the code card.
  */
 const layoutClasses =
-  'flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 sm:p-6 lg:flex-row lg:overflow-hidden';
+  'flex min-h-0 flex-1 flex-col gap-4 p-4 sm:p-6 lg:flex-row lg:overflow-hidden';
 
 const canvasColumnClasses =
   'contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-4';
@@ -135,7 +140,9 @@ function ExploreRoute() {
     );
 
   return (
-    <div className="bg-background text-foreground flex h-dvh flex-col lg:min-h-152">
+    <div className="bg-background text-foreground flex min-h-dvh flex-col lg:h-dvh lg:min-h-168">
+      <ExploreHeader />
+
       <main className={layoutClasses}>
         <div className={canvasColumnClasses}>
           <div className={canvasClasses}>
