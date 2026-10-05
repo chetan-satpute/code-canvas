@@ -447,6 +447,10 @@
     color-scheme: dark;
   }
 
+  body {
+    @apply bg-background;
+  }
+
   /* Firefox, and any browser without the WebKit pseudo-elements.
      Kept behind @supports because in current Chromium, setting
      scrollbar-color or scrollbar-width disables the ::-webkit-scrollbar

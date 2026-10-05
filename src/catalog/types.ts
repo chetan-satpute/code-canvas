@@ -4,6 +4,7 @@ export interface ArgumentField {
 }
 
 export interface StructureOperation {
+  id: string;
   label: string;
   args: ArgumentField[];
 }

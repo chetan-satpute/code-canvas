@@ -1,5 +1,5 @@
+import type { StructureOperation } from '#catalog/types.ts';
 import Card from '#components/Card.tsx';
-import type { StructureOperation } from '#features/explore/types.ts';
 
 import StructureOperationRow from './StructureOperationRow.tsx';
 
@@ -19,7 +19,7 @@ function StructureCard(props: StructureCardProps) {
       <div className="flex max-h-80 flex-col gap-8 overflow-auto p-5 lg:h-full lg:max-h-none">
         {operations.map((operation) => (
           <StructureOperationRow
-            key={operation.label}
+            key={operation.id}
             label={operation.label}
             args={operation.args}
           />

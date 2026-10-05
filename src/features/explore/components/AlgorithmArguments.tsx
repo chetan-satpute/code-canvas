@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
+import type { ArgumentField } from '#catalog/types.ts';
 import Button from '#components/Button.tsx';
 import Icon from '#components/Icon.tsx';
 import TextInput from '#components/TextInput.tsx';
-import type { ArgumentField } from '#features/explore/types.ts';
 
 interface AlgorithmArgumentsProps {
   args: ArgumentField[];

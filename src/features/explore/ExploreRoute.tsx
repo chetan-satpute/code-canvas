@@ -1,10 +1,6 @@
-import { useParams } from '@tanstack/react-router';
+import { useLoaderData } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import type {
-  ArgumentField,
-  StructureOperation,
-} from '#features/explore/types.ts';
 import cn from '#utils/cn.ts';
 
 import AlgorithmArguments from './components/AlgorithmArguments.tsx';
@@ -16,7 +12,7 @@ import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
 
-// Placeholders until algorithms and the engine exist.
+// Placeholders until listings and the engine exist.
 const placeholderLines = [
   'function bubbleSort(array) {',
   '  for (let i = 0; i < array.length; i++) {',
@@ -59,25 +55,6 @@ const placeholderLines = [
   '  }',
   '  return array;',
   '}',
-];
-const placeholderArguments: ArgumentField[] = [
-  { name: 'array', placeholder: 'e.g. 5, 3, 8, 1' },
-  ...Array.from({ length: 9 }, (_, index) => ({
-    name: `arg${index + 2}`,
-    placeholder: `e.g. ${index + 2}`,
-  })),
-];
-const placeholderOperations: StructureOperation[] = [
-  { label: 'Push', args: [{ name: 'value', placeholder: 'e.g. 7' }] },
-  { label: 'Pop', args: [] },
-  {
-    label: 'Insert',
-    args: [
-      { name: 'index', placeholder: 'e.g. 2' },
-      { name: 'value', placeholder: 'e.g. 7' },
-    ],
-  },
-  { label: 'Remove', args: [{ name: 'index', placeholder: 'e.g. 2' }] },
 ];
 const placeholderFrames = ['bubbleSort(array)', 'swap(array, 2, 3)'];
 const placeholderVariables: [string, string][] = [
@@ -125,14 +102,14 @@ const stackAndMemoryClasses = 'grid gap-4 sm:grid-cols-5 lg:grid-rows-1';
 type View = 'planning' | 'running';
 
 function ExploreRoute() {
-  const { algorithmId } = useParams({ from: '/$algorithmId' });
+  const { algorithm, structure } = useLoaderData({ from: '/$algorithmId' });
 
   const [view, setView] = useState<View>('planning');
 
   const actions =
     view === 'planning' ? (
       <AlgorithmArguments
-        args={placeholderArguments}
+        args={algorithm.args}
         onRun={() => setView('running')}
       />
     ) : (
@@ -152,9 +129,9 @@ function ExploreRoute() {
           {view === 'planning' ? (
             <div className={underCanvasClasses}>
               <StructureCard
-                title="Array"
-                description="A fixed-size sequence of elements stored side by side."
-                operations={placeholderOperations}
+                title={structure.title}
+                description={structure.description}
+                operations={structure.operations}
               />
             </div>
           ) : (
@@ -171,8 +148,8 @@ function ExploreRoute() {
 
         <div className={codeClasses}>
           <CodeCard
-            title={algorithmId}
-            description="Repeatedly swaps adjacent elements that are out of order until the array is sorted."
+            title={algorithm.title}
+            description={algorithm.description}
             lines={placeholderLines}
             actions={actions}
           />
