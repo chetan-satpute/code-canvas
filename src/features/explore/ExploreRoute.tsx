@@ -12,50 +12,7 @@ import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
 
-// Placeholders until listings and the engine exist.
-const placeholderLines = [
-  'function bubbleSort(array) {',
-  '  for (let i = 0; i < array.length; i++) {',
-  '    for (let j = 0; j < array.length - i - 1; j++) {',
-  '      if (array[j] > array[j + 1]) {',
-  '        swap(array, j, j + 1);',
-  '      }',
-  '    }',
-  '  }',
-  '  return array;',
-  '}',
-  '',
-  'function swap(array, left, right) {',
-  '  const temporary = array[left];',
-  '  array[left] = array[right];',
-  '  array[right] = temporary;',
-  '}',
-  '',
-  'function isSorted(array) {',
-  '  for (let index = 1; index < array.length; index++) {',
-  '    if (array[index - 1] > array[index]) {',
-  '      return false;',
-  '    }',
-  '  }',
-  '  return true;',
-  '}',
-  '',
-  'function optimisedBubbleSort(array) {',
-  '  let lastUnsortedIndex = array.length - 1;',
-  '  while (lastUnsortedIndex > 0) {',
-  '    let lastSwapIndex = 0;',
-  '    for (let index = 0; index < lastUnsortedIndex; index++) {',
-  '      if (array[index] > array[index + 1]) {',
-  '        swap(array, index, index + 1);',
-  '        lastSwapIndex = index;',
-  '      }',
-  '    }',
-  '    // Everything past the last swap is already in place, so the next pass can stop there instead of scanning the whole array.',
-  '    lastUnsortedIndex = lastSwapIndex;',
-  '  }',
-  '  return array;',
-  '}',
-];
+// Placeholders until the engine exists.
 const placeholderFrames = ['bubbleSort(array)', 'swap(array, 2, 3)'];
 const placeholderVariables: [string, string][] = [
   ['array', '[3, 5, 1, 8]'],
@@ -102,7 +59,9 @@ const stackAndMemoryClasses = 'grid gap-4 sm:grid-cols-5 lg:grid-rows-1';
 type View = 'planning' | 'running';
 
 function ExploreRoute() {
-  const { algorithm, structure } = useLoaderData({ from: '/$algorithmId' });
+  const { algorithm, structure, listing } = useLoaderData({
+    from: '/$algorithmId',
+  });
 
   const [view, setView] = useState<View>('planning');
 
@@ -150,7 +109,11 @@ function ExploreRoute() {
           <CodeCard
             title={algorithm.title}
             description={algorithm.description}
-            lines={placeholderLines}
+            lines={listing.lines}
+            // Until the engine steps a run, a run stays on its entry line.
+            activeLine={
+              view === 'running' ? listing.anchors['enter'] : undefined
+            }
             actions={actions}
           />
         </div>
