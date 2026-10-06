@@ -1,10 +1,11 @@
 import { useLoaderData } from '@tanstack/react-router';
 
+import CanvasCard from '#components/CanvasCard.tsx';
+import TopGlow from '#components/TopGlow.tsx';
 import cn from '#utils/cn.ts';
 
 import AlgorithmArguments from './components/AlgorithmArguments.tsx';
 import CallStackCard from './components/CallStackCard.tsx';
-import CanvasCard from './components/CanvasCard.tsx';
 import CodeCard from './components/CodeCard.tsx';
 import ExploreHeader from './components/ExploreHeader.tsx';
 import MemoryCard from './components/MemoryCard.tsx';
@@ -86,7 +87,8 @@ function ExploreRoute() {
   );
 
   return (
-    <div className="bg-background text-foreground flex min-h-dvh flex-col lg:h-dvh lg:min-h-168">
+    <div className="bg-background text-foreground relative isolate flex min-h-dvh flex-col lg:h-dvh lg:min-h-168">
+      <TopGlow />
       <ExploreHeader />
 
       <main className={layoutClasses}>

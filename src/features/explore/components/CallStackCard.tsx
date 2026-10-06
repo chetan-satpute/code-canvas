@@ -1,7 +1,7 @@
 import Card from '#components/Card.tsx';
+import CodeTokens from '#components/CodeTokens.tsx';
 
 import { highlightSignature } from '../utils/signature.ts';
-import CodeTokens from './CodeTokens.tsx';
 
 interface CallStackCardProps {
   frames: string[];

@@ -1,10 +1,9 @@
 import { type ReactNode, useEffect, useRef } from 'react';
 
 import Card from '#components/Card.tsx';
+import CodeTokens from '#components/CodeTokens.tsx';
 import cn from '#utils/cn.ts';
 import type { CodeLine } from '#utils/code.ts';
-
-import CodeTokens from './CodeTokens.tsx';
 
 interface CodeCardProps {
   title: string;

@@ -2,8 +2,7 @@ import { useRef } from 'react';
 
 import type { CanvasFrame } from '#canvas/frame.ts';
 import Card from '#components/Card.tsx';
-
-import useCanvasFrames from '../hooks/useCanvasFrames.ts';
+import useCanvasFrames from '#hooks/useCanvasFrames.ts';
 
 interface CanvasCardProps {
   // The frames of the current step, played in order. The canvas is drawn at

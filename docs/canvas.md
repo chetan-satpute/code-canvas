@@ -81,7 +81,7 @@ lighter `--success`.
 A step carries `CanvasFrame[]`, not one frame. A step that only changes a
 color carries one frame; a step that moves something carries one full frame
 per tick of the movement. `useCanvasFrames`
-(`src/features/explore/hooks/`) plays them one per `requestAnimationFrame`
+(`src/hooks/`) plays them one per `requestAnimationFrame`
 and holds the last until the next step replaces the array. Playback is keyed
 on the array's identity, so re-rendering the same step does not replay it.
 

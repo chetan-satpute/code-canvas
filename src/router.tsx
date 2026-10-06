@@ -14,6 +14,7 @@ import AlgorithmLoadError from '#features/explore/components/AlgorithmLoadError.
 import AlgorithmNotFound from '#features/explore/components/AlgorithmNotFound.tsx';
 import ExploreRoute from '#features/explore/ExploreRoute.tsx';
 import HomeRoute from '#features/home/HomeRoute.tsx';
+import { loadHero } from '#features/home/utils/hero.ts';
 import logger from '#utils/logger.ts';
 
 const rootRoute = createRootRoute({
@@ -23,6 +24,7 @@ const rootRoute = createRootRoute({
 const homeRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
+  loader: loadHero,
   component: HomeRoute,
 });
 

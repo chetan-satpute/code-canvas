@@ -47,8 +47,8 @@ and the only file that uses them is `vite/codeHighlight.ts`.
    to load — typically in a tab opened before a deploy, asking for a chunk
    the new build no longer has — renders an error page whose Reload button
    fetches the current build.
-5. `CodeCard` draws each line through `src/features/explore/components/CodeTokens.tsx`, one
-   `<span>` per token with the token's color, and marks the active line.
+5. `CodeCard` and the home page's hero draw each line through `src/components/CodeTokens.tsx`, one
+   `<span>` per token with the token's color, and mark the active line.
 
 The plugin builds a single highlighter, lazily, with only the TypeScript
 grammar, the tokyo-night theme and Shiki's JavaScript regex engine. The theme
