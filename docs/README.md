@@ -1,0 +1,9 @@
+# Docs
+
+Living documents describing how Code Canvas works. Each one is updated in the
+same commit as the behavior it describes, and is written for a reader who has
+none of the context of the conversation that produced it.
+
+| Document                                     | Covers                                                                    |
+| -------------------------------------------- | ------------------------------------------------------------------------- |
+| [code-highlighting.md](code-highlighting.md) | How listings are syntax-highlighted at build time and how lines are named |
