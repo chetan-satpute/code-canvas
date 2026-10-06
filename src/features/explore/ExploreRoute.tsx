@@ -11,9 +11,9 @@ import ExploreHeader from './components/ExploreHeader.tsx';
 import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
-import { createPlaceholderFrame } from './utils/placeholderFrame.ts';
+import useStructureBoard from './hooks/useStructureBoard.ts';
 
-// Placeholders until the engine exists.
+// Placeholders until the engine runs algorithms.
 const placeholderFrames = [
   'linearSearch(array: [1,2,3,4,5], target: 45)',
   'insert(bst, value: 46)',
@@ -23,8 +23,6 @@ const placeholderVariables: [string, string][] = [
   ['i', '0'],
   ['j', '2'],
 ];
-// Module-level so its identity is stable: a new array would replay the step.
-const placeholderCanvasFrames = [createPlaceholderFrame()];
 
 /*
  * Both views share one layout, and the canvas and the code card render
@@ -73,6 +71,7 @@ function ExploreRoute() {
   });
 
   const [view, setView] = useState<View>('planning');
+  const { frames, applyOperation } = useStructureBoard(structure);
 
   const actions =
     view === 'planning' ? (
@@ -91,7 +90,7 @@ function ExploreRoute() {
       <main className={layoutClasses}>
         <div className={canvasColumnClasses}>
           <div className={canvasClasses}>
-            <CanvasCard frames={placeholderCanvasFrames} />
+            <CanvasCard frames={frames} />
           </div>
 
           {view === 'planning' ? (
@@ -100,6 +99,7 @@ function ExploreRoute() {
                 title={structure.title}
                 description={structure.description}
                 operations={structure.operations}
+                onApply={applyOperation}
               />
             </div>
           ) : (

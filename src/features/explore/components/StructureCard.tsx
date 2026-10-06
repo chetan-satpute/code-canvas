@@ -7,10 +7,11 @@ interface StructureCardProps {
   title: string;
   description: string;
   operations: StructureOperation[];
+  onApply: (operationId: string, values: Record<string, string>) => boolean;
 }
 
 function StructureCard(props: StructureCardProps) {
-  const { title, description, operations } = props;
+  const { title, description, operations, onApply } = props;
 
   return (
     <Card title={title} description={description} padded={false}>
@@ -22,6 +23,7 @@ function StructureCard(props: StructureCardProps) {
             key={operation.id}
             label={operation.label}
             args={operation.args}
+            onApply={(values) => onApply(operation.id, values)}
           />
         ))}
       </div>

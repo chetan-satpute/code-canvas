@@ -22,14 +22,14 @@ const structures: Record<StructureId, Structure> = {
         id: 'insert',
         label: 'Insert',
         args: [
-          { name: 'index', placeholder: 'e.g. 2' },
+          { name: 'index', placeholder: 'e.g. 2', kind: 'integer' },
           { name: 'value', placeholder: 'e.g. 42' },
         ],
       },
       {
         id: 'remove',
         label: 'Remove',
-        args: [{ name: 'index', placeholder: 'e.g. 2' }],
+        args: [{ name: 'index', placeholder: 'e.g. 2', kind: 'integer' }],
       },
     ],
   },
