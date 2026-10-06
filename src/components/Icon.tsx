@@ -1,5 +1,6 @@
 import {
   ArrowLeft,
+  Check,
   Maximize,
   Minimize,
   Play,
@@ -11,6 +12,7 @@ import {
 // would pull in the entire icon set.
 const iconComponents = {
   'arrow-left': ArrowLeft,
+  check: Check,
   maximize: Maximize,
   minimize: Minimize,
   play: Play,

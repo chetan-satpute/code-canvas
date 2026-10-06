@@ -1,5 +1,4 @@
 import { useLoaderData } from '@tanstack/react-router';
-import { useState } from 'react';
 
 import cn from '#utils/cn.ts';
 
@@ -11,18 +10,7 @@ import ExploreHeader from './components/ExploreHeader.tsx';
 import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
-import useStructureBoard from './hooks/useStructureBoard.ts';
-
-// Placeholders until the engine runs algorithms.
-const placeholderFrames = [
-  'linearSearch(array: [1,2,3,4,5], target: 45)',
-  'insert(bst, value: 46)',
-];
-const placeholderVariables: [string, string][] = [
-  ['array', '[3, 5, 1, 8]'],
-  ['i', '0'],
-  ['j', '2'],
-];
+import useExploreSession from './hooks/useExploreSession.ts';
 
 /*
  * Both views share one layout, and the canvas and the code card render
@@ -63,25 +51,39 @@ const codeClasses = 'lg:w-104 lg:shrink-0 xl:w-128';
 const stackAndMemoryClasses =
   'grid grid-cols-1 gap-4 sm:grid-cols-5 lg:grid-rows-1';
 
-type View = 'planning' | 'running';
-
 function ExploreRoute() {
-  const { algorithm, structure, listing } = useLoaderData({
-    from: '/$algorithmId',
-  });
+  const data = useLoaderData({ from: '/$algorithmId' });
+  const { algorithm, structure, listing } = data;
 
-  const [view, setView] = useState<View>('planning');
-  const { frames, applyOperation } = useStructureBoard(structure);
+  const {
+    frames,
+    step,
+    isRunning,
+    isFinished,
+    applyOperation,
+    run,
+    nextStep,
+    stop,
+  } = useExploreSession(data);
 
-  const actions =
-    view === 'planning' ? (
-      <AlgorithmArguments
-        args={algorithm.args}
-        onRun={() => setView('running')}
-      />
-    ) : (
-      <RunControls onStop={() => setView('planning')} onNextStep={() => {}} />
-    );
+  const callStack = step?.callStack ?? [];
+
+  const actions = isRunning ? (
+    <RunControls
+      finished={isFinished}
+      onStop={stop}
+      onNextStep={nextStep}
+      onFinish={stop}
+    />
+  ) : (
+    <AlgorithmArguments
+      // The route is reused across algorithms, so without a key one
+      // algorithm's values and invalid marks would carry over to the next.
+      key={algorithm.id}
+      args={algorithm.args}
+      onRun={run}
+    />
+  );
 
   return (
     <div className="bg-background text-foreground flex min-h-dvh flex-col lg:h-dvh lg:min-h-168">
@@ -93,7 +95,19 @@ function ExploreRoute() {
             <CanvasCard frames={frames} />
           </div>
 
-          {view === 'planning' ? (
+          {isRunning ? (
+            <div className={cn(underCanvasClasses, stackAndMemoryClasses)}>
+              <div className="sm:col-span-3">
+                <CallStackCard
+                  frames={callStack.map((entry) => entry.signature)}
+                />
+              </div>
+              <div className="sm:col-span-2">
+                {/* The innermost call, which is the one running. */}
+                <MemoryCard variables={callStack[0]?.memory ?? []} />
+              </div>
+            </div>
+          ) : (
             <div className={underCanvasClasses}>
               <StructureCard
                 title={structure.title}
@@ -101,15 +115,6 @@ function ExploreRoute() {
                 operations={structure.operations}
                 onApply={applyOperation}
               />
-            </div>
-          ) : (
-            <div className={cn(underCanvasClasses, stackAndMemoryClasses)}>
-              <div className="sm:col-span-3">
-                <CallStackCard frames={placeholderFrames} />
-              </div>
-              <div className="sm:col-span-2">
-                <MemoryCard variables={placeholderVariables} />
-              </div>
             </div>
           )}
         </div>
@@ -119,10 +124,7 @@ function ExploreRoute() {
             title={algorithm.title}
             description={algorithm.description}
             lines={listing.lines}
-            // Until the engine steps a run, a run stays on its entry line.
-            activeLine={
-              view === 'running' ? listing.anchors['enter'] : undefined
-            }
+            activeLine={step?.line}
             actions={actions}
           />
         </div>

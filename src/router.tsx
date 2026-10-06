@@ -9,10 +9,12 @@ import {
 import { findAlgorithm } from '#catalog/algorithms.ts';
 import { loadListing } from '#catalog/listings.ts';
 import structures from '#catalog/structures.ts';
+import { findAlgorithmRunner } from '#engine/algorithms/registry.ts';
 import AlgorithmLoadError from '#features/explore/components/AlgorithmLoadError.tsx';
 import AlgorithmNotFound from '#features/explore/components/AlgorithmNotFound.tsx';
 import ExploreRoute from '#features/explore/ExploreRoute.tsx';
 import HomeRoute from '#features/home/HomeRoute.tsx';
+import logger from '#utils/logger.ts';
 
 const rootRoute = createRootRoute({
   component: () => <Outlet />,
@@ -34,13 +36,25 @@ const exploreRoute = createRoute({
       throw notFound();
     }
 
+    const runner = findAlgorithmRunner(algorithm.id);
+
+    if (!runner) {
+      logger.error(`No runner for algorithm '${algorithm.id}'`);
+      throw notFound();
+    }
+
     const listing = await loadListing(algorithm.id);
 
     if (!listing) {
       throw notFound();
     }
 
-    return { algorithm, structure: structures[algorithm.structureId], listing };
+    return {
+      algorithm,
+      structure: structures[algorithm.structureId],
+      listing,
+      runner,
+    };
   },
   component: ExploreRoute,
   notFoundComponent: AlgorithmNotFound,
