@@ -13,7 +13,10 @@ import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
 
 // Placeholders until the engine exists.
-const placeholderFrames = ['bubbleSort(array)', 'swap(array, 2, 3)'];
+const placeholderFrames = [
+  'linearSearch(array: [1,2,3,4,5], target: 45)',
+  'insert(bst, value: 46)',
+];
 const placeholderVariables: [string, string][] = [
   ['array', '[3, 5, 1, 8]'],
   ['i', '0'],

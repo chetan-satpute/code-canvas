@@ -1,5 +1,8 @@
 import Card from '#components/Card.tsx';
 
+import { highlightSignature } from '../utils/signature.ts';
+import CodeTokens from './CodeTokens.tsx';
+
 interface CallStackCardProps {
   frames: string[];
 }
@@ -15,7 +18,9 @@ function CallStackCard(props: CallStackCardProps) {
             key={index}
             className="bg-surface-2 font-code text-foreground rounded-lg px-3 py-2 text-sm"
           >
-            {frame}
+            <code>
+              <CodeTokens tokens={highlightSignature(frame)} />
+            </code>
           </li>
         ))}
       </ul>
