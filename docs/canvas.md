@@ -126,11 +126,11 @@ the elements. The engine's structures and operations exist now (see
 
 - **Marking a node.** v2's algorithms wrote the same pair of helpers four
   times: set a node's variant and put a variable's name under it, then put
-  both back. "A variable in the listing points at this node" is a first-class
-  idea and should be one `mark(name, variant)` / `unmark()` beside `CoreNode`.
-- **Naming cursors on a row.** Three algorithms each joined the names of
-  cursors that land on one cell into a single label (`'i j'`). That belongs in
-  one shared module over a row of nodes.
+  both back. The name half is now the array's cursors (see
+  [engine.md](engine.md)), which also join names that land on one cell
+  (`'i j'`). Algorithms set the variant directly. A single `mark(name,
+variant)` / `unmark()` is still worth having once a structure without
+  indexed cells, such as a tree, needs to name a node.
 - **An edge's opacity could follow its nodes.** A node's labels take its
   opacity, but an edge keeps its own, so a node fading out leaves a
   full-strength arrow pointing at it; v2 faded such edges by hand. Serializing

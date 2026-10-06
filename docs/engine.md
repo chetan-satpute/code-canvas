@@ -5,8 +5,9 @@ It produces `CanvasFrame`s and nothing else reaches the renderer; how a frame
 is modelled and drawn is in [canvas.md](canvas.md). Nothing in `src/engine/`
 imports React.
 
-So far the engine covers structures and the edits the structure card applies
-to them. Algorithm runs (steps, the call stack, memory) are not built yet.
+It covers structures, the edits the structure card applies to them, and
+algorithm runs: the steps a reader walks through, with the call stack and
+memory beside them.
 
 ## Pieces
 
@@ -17,11 +18,19 @@ src/engine/
   board.ts             CoreBoard: what is on the canvas, and pending frames
   animation.ts         tweens: move, move many, move by, appear, disappear
   operation.ts         OperationRunner and operationFor(Structure)
+  algorithm.ts         AlgorithmRunner and algorithmFor(Structure)
+  run.ts               CoreRun: one run's call stack, and its steps
+  call.ts              CoreCall: one call's signature and memory
+  step.ts              CoreStep: what the reader is shown at one point
+  algorithms/
+    registry.ts        algorithm id → AlgorithmRunner
+    array-linear-search.ts
   structures/
     registry.ts        StructureId → { create, operations }
     array/
-      structure.ts     CoreArray
+      structure.ts     CoreArray, with its cursors
       operations.ts    randomize, sort, insert, remove
+      algorithm.ts     defineArrayAlgorithm
 ```
 
 ## Structures
@@ -55,9 +64,9 @@ reader was last shown anything.
   nothing was pushed, it returns one frame of the board as it stands. That
   way a change with no animation, such as an instant reorder, is still shown.
 
-The explore page's `useStructureBoard` (`src/features/explore/hooks/`) keeps
-the board, its structure and that structure's operations together as one
-session. Each operation puts the drained frames into the session, which for
+The explore page's `useExploreSession` (`src/features/explore/hooks/`) keeps
+the board, its structure, that structure's operations and the run in progress
+together as one session. Each operation puts the drained frames into the session, which for
 an operation is the single frame `drainFrames` stands in, and `CanvasCard`
 draws it. Moving to another algorithm of the same structure keeps the
 session, so what the user built stays. The route component is reused across
@@ -67,8 +76,9 @@ edited.
 
 ## Writing a tween
 
-Nothing uses these yet: structure operations are instant, and the tweens are
-there for algorithm runs, where movement is what the reader watches. A tween
+Nothing uses these yet. Structure operations are instant, and Linear Search
+only recolors. The tweens are there for algorithm runs that move values,
+where the movement is what the reader watches. A tween
 is written as "mutate a little, push a frame", repeated. The helpers in
 `animation.ts` do this for movement and opacity:
 
@@ -139,3 +149,104 @@ Every operation is instant:
 
 The index for Insert is clamped to `[0, length]`, and for Remove to
 `[0, length − 1]`. Removing from an empty array does nothing.
+
+## Runs
+
+A run steps an algorithm against its listing. The listing's line markers
+(see [code-highlighting.md](code-highlighting.md)) name the lines a step can
+stand on, and the algorithm is a generator that mutates the board and yields
+a `CoreStep` at each of them:
+
+- `line`: the listing line, 1-based like the code card's gutter.
+- `frames`: everything the board pushed since the last step, so a step is
+  a film strip just like an operation's frames.
+- `callStack`: one `CallStackEntry` per call in progress, innermost first.
+
+Nothing is computed ahead of time. Each Next step runs the generator to its
+next yield.
+
+### The run, its calls and memory
+
+`algorithmFor('array', CoreArray)` binds a structure class the way
+`operationFor` does: an `instanceof` check narrows the type, and a check
+fails if one of the `args` names is missing. `play` receives
+`{ run, board, structure, args }`, with the arguments already parsed by the
+kinds the catalog declares.
+
+`CoreRun` holds one run: the listing's anchors and the call stack.
+
+- `run.step(anchor)` drains the board and builds the step. It throws on an
+  anchor the listing doesn't define. Otherwise a mismatch between algorithm
+  and listing would show up as a highlight on a plausible-looking wrong line.
+- `run.call(name, parameters)` pushes a `CoreCall`.
+
+The call stack lives on the run, not on the board. A run that ends or is
+abandoned is just dropped, and the board has nothing left to clear.
+
+A `CoreCall` keeps parameters in declaration order, then locals in the order
+they were first set. `set(name, value)` declares a local or updates any
+variable in place. `clear(name)` drops a local that has gone out of scope.
+Parameters are never dropped. A call serializes into two views:
+
+- The **signature**, built from the parameters, with arrays printed whole:
+  `linearSearch(array: [3, 5, 1], target: 42)`.
+- **Memory**, which holds the scalar variables only. The array is already on
+  the canvas and in the signature, so memory does not repeat it. The memory
+  card shows the innermost call, which is the one running.
+
+### The last step is returned
+
+`play` returns `Generator<CoreStep, CoreStep>`. Every step but the last is
+yielded, and the last, at the closing brace (`exit`), is the generator's
+return value. That way the page knows it is showing the last step as soon as
+it shows it, without running the algorithm one step ahead. On that step,
+Next step becomes Finish.
+
+### Stop and Finish
+
+Starting a run calls `board.snapshot()`, which captures which structures are
+on the board, each one's `toData()` and its position, opacity and name, and
+returns the undo. Stop on a run
+that has not finished calls it, so an abandoned run leaves nothing behind.
+Finish keeps what the run did. Linear Search changes no values, so the two
+look the same there, but an insert would not.
+
+The arguments form empties when a run starts. Moving to another algorithm
+during a run ends it the way Stop does: undone midway, kept once finished. A
+run whose generator throws is logged and undone.
+
+### Array cursors
+
+An index variable from the listing is drawn under the cell it indexes:
+`array.setCursor('i', i)` and `array.clearCursor('i')`. A cursor is stored
+as an index, not on a node, because an index can point past the last cell:
+the loop check that ends a linear search has `i === array.length`, and its
+cursor sits under the empty cell after the array. Cursors on the same cell
+share one label (`i j`). The label's position comes from the index when the
+array serializes, and `restore` clears every cursor.
+
+### Linear Search
+
+| Step      | Canvas                                                | Memory    |
+| --------- | ----------------------------------------------------- | --------- |
+| `enter`   | unchanged                                             | target    |
+| `loop`    | cursor `i` under cell i, past the end when i = length | target, i |
+| `compare` | cell i `secondary`                                    | target, i |
+| `found`   | cell i `success`                                      | target, i |
+| `missing` | cursor gone, every cell `danger`                      | target    |
+| `exit`    | colors reset                                          | target    |
+
+A failed comparison sets the cell back to `primary` and steps to `loop` with
+the next `i`. That includes the final check, with `i` past the end, which is
+what ends the loop.
+
+### Adding an algorithm
+
+1. Write the listing in `src/catalog/listings/<id>.md`, with a marker on
+   every line a step stands on, and add the algorithm to
+   `src/catalog/algorithms.ts`.
+2. Write the generator in `src/engine/algorithms/<id>.ts` with the
+   structure's binder, for example `defineArrayAlgorithm`.
+3. Register it in `src/engine/algorithms/registry.ts`. The explore route
+   treats an algorithm that has no runner, or no listing, as one it cannot
+   show.
