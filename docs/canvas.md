@@ -135,8 +135,9 @@ the elements. The engine's structures and operations exist now (see
   times: set a node's variant and put a variable's name under it, then put
   both back. The name half is now the cursors the array and the max heap
   share and the pointers the linked list and the binary search tree share
-  (see [engine.md](engine.md)), which both join names that land on one node
-  (`'i j'`). Algorithms set the variant directly. A single
+  (see [engine.md](engine.md)). Names that land on one node share it: the
+  cursors and the list's pointers on one label (`'i j'`), the tree's pointers
+  stacked a line apart. Algorithms set the variant directly. A single
   `mark(name, variant)` / `unmark()` has not paid off yet: Linear Search, the
   tree's Insert Value and the heap's Push all name a node a step before they
   color it, so the two halves do not move together.

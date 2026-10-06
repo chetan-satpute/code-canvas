@@ -12,6 +12,11 @@ export const LEVEL_SPACING = 2 * NODE_HEIGHT;
 
 export type Side = 'left' | 'right';
 
+interface Position {
+  x: number;
+  y: number;
+}
+
 // An edge holds both of its nodes, so a link is the edge itself rather than a
 // reference to the child.
 export type Link = CoreEdge<CoreBinarySearchTreeNode> | null;
@@ -57,7 +62,13 @@ export class CoreBinarySearchTree extends CoreStructure<number[]> {
     super();
 
     this.root = null;
-    this.pointers = new CorePointers();
+    // Stacked, not joined: the row under a node is where its links leave, and
+    // a joined label as long as `node parent` runs into a link to a child in
+    // the next column. A name on a later line sits further down, where that
+    // link is further out, and spills into the next level only in the node's
+    // own column, which no other node takes. The first name stays where it
+    // was, so a short one there clears the link too.
+    this.pointers = new CorePointers('stack');
     this.restore(values);
   }
 
@@ -143,13 +154,13 @@ export class CoreBinarySearchTree extends CoreStructure<number[]> {
     this.pointers.delete(name);
   }
 
+  // Where each node the tree reaches belongs, worked out without moving any.
   // Each node takes the next column in order, and its depth decides the row.
   // That gives every node a column of its own and draws no crossing links
   // without measuring a subtree. Two nodes on one level always have an
   // ancestor between them in order, so the cells beside a node are empty too.
-  // Places only the nodes the tree reaches. One held by a pointer alone stays
-  // wherever the algorithm put it.
-  rearrange() {
+  layout(): Map<CoreBinarySearchTreeNode, Position> {
+    const positions = new Map<CoreBinarySearchTreeNode, Position>();
     let column = 0;
 
     const walk = (node: CoreBinarySearchTreeNode | null, depth: number) => {
@@ -157,14 +168,24 @@ export class CoreBinarySearchTree extends CoreStructure<number[]> {
 
       walk(node.child('left'), depth + 1);
 
-      node.x = this.x + column * NODE_WIDTH;
-      node.y = this.y + depth * LEVEL_SPACING;
+      positions.set(node, {
+        x: this.x + column * NODE_WIDTH,
+        y: this.y + depth * LEVEL_SPACING,
+      });
       column++;
 
       walk(node.child('right'), depth + 1);
     };
 
     walk(this.root, 0);
+
+    return positions;
+  }
+
+  // Places only the nodes the tree reaches. One held by a pointer alone stays
+  // wherever the algorithm put it.
+  rearrange() {
+    for (const [node, position] of this.layout()) Object.assign(node, position);
   }
 
   protected serializeContents(frame: CanvasFrame) {

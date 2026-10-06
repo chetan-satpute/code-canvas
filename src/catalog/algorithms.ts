@@ -44,6 +44,14 @@ const algorithms: Record<string, Algorithm> = {
       'Descends left or right by comparing against each node, and hangs the new node off the first empty slot.',
     args: [{ name: 'value', placeholder: 'e.g. 42' }],
   },
+  'binary-search-tree-remove': {
+    id: 'binary-search-tree-remove',
+    structureId: 'binary-search-tree',
+    title: 'Remove Value',
+    description:
+      'Unlinks a leaf, lifts a lone child into place, or — for a node with two children — replaces it with its inorder successor.',
+    args: [{ name: 'value', placeholder: 'e.g. 13' }],
+  },
   'max-heap-push': {
     id: 'max-heap-push',
     structureId: 'max-heap',

@@ -66,13 +66,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
       'Keeps a reference to the previous node while scanning, so the match can be unlinked by pointing past it.',
   },
   {
-    id: 'binary-search-tree-remove',
-    structureId: 'binary-search-tree',
-    title: 'Remove Value',
-    description:
-      'Unlinks a leaf, lifts a lone child into place, or — for a node with two children — replaces it with its inorder successor.',
-  },
-  {
     id: 'max-heap-pop',
     structureId: 'max-heap',
     title: 'Pop',

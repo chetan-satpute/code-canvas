@@ -30,6 +30,7 @@ src/engine/
     array-merge-sort.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
+    binary-search-tree-remove.ts
     max-heap-push.ts
   structures/
     registry.ts        StructureId → { create, operations }
@@ -241,7 +242,19 @@ order, so the cells beside a node are empty, and the row under it holds only
 its own links and its pointer. `root` is drawn above the root node, derived
 from it the way the list's `head` is. Pointers work as the list's do: a node
 a pointer holds is drawn even when the tree cannot reach it, and
-`rearrange()` leaves such a node where the algorithm put it.
+`rearrange()` leaves such a node where the algorithm put it. `layout()` works
+out where `rearrange()` would put each node without moving any, which is what
+an algorithm animates towards.
+
+Pointers on one node are stacked rather than joined: the first under the node
+as usual, each later one half a row (`STACK_LINE`) lower, in the order they
+arrived. Joined, `node parent` is long enough that a link to a child in the
+next column runs through it. A later line sits further down, where that link
+is further out, and spills into the next level only in the node's own column,
+which no other node takes. Putting a name a full row lower, or in the empty
+cell beside the node, was tried and read as naming the neighbouring node on
+that level. The listings so far put a short name (`node`, `min`) first
+whenever two meet, so the first line clears the link too.
 
 Every operation is instant:
 
@@ -446,6 +459,55 @@ drawn. A link to a child in the next column leaves the node at 45°, and where
 it crosses the top of the label's text it is about 25px to the side of the
 label's center. A seven-letter name reaches about 28px either side, so the
 link clips it; a four-letter name reaches about 16px and clears it.
+
+### Remove Value
+
+| Step                             | Canvas                                                                                | Memory |
+| -------------------------------- | ------------------------------------------------------------------------------------- | ------ |
+| `enter`                          | unchanged                                                                             | value  |
+| `start`                          | pointer `node` under the root; none on an empty tree                                  | value  |
+| `noParent`                       | unchanged                                                                             | value  |
+| `search`                         | `node` `secondary`                                                                    | value  |
+| `setParent`                      | pointer `parent` joins `node`                                                         | value  |
+| `lessCheck`                      | unchanged                                                                             | value  |
+| `goLeft`, `goRight`              | `node` back to `primary`, and the pointer moves to the child, or goes at `null`       | value  |
+| `missingCheck`, `twoCheck`       | unchanged                                                                             | value  |
+| `missing`                        | unchanged                                                                             | value  |
+| `minParent`                      | `parent` joins `node`                                                                 | value  |
+| `minStart`                       | pointer `min` under the right child, `tertiary`                                       | value  |
+| `minLoop`                        | unchanged                                                                             | value  |
+| `minSetParent`                   | `parent` joins `min`                                                                  | value  |
+| `minGoLeft`                      | the old `min` back to `primary`, the pointer and the color move to its left child     | value  |
+| `copy`                           | a copy of `min`'s value rises and slides into `node`, which takes it, `success`       | value  |
+| `retarget`                       | `node` joins `min`                                                                    | value  |
+| `child`                          | `min` gone, `node` `danger`, pointer `child` under the child if there is one          | value  |
+| `rootCheck`, `sideCheck`         | unchanged                                                                             | value  |
+| `setRoot`, `setLeft`, `setRight` | the node fades out with its links, the new link fades in, and the tree closes the gap | value  |
+| `rootReturn`                     | unchanged                                                                             | value  |
+| `exit`                           | colors reset, pointers gone                                                           | value  |
+
+A pointer holding `null` is nowhere on the canvas, so `parent` appears only
+at its first assignment and `node` goes when the search walks off a leaf.
+`min` is declared in the two-children block and leaves the canvas at `child`,
+the first step past its brace.
+
+`node.value = min.value` copies a value, as Merge Sort's assignments do, so
+what travels is a floating copy, and `min` keeps its value until its node
+leaves: for that one step the tree holds the value twice, which is what the
+code has done. `min` is the successor, the next column along, so the copy
+rises up that column, which no other node takes, then slides into `node` from
+the empty cell beside it.
+
+`parent.left = child` unlinks the node, but the run still holds it in `node`
+until it returns, and the canvas shows what the code can reach. The node fades
+out at the assignment all the same. The child's subtree rises into its place,
+so a node left standing there would sit on top of the child or have the new
+link drawn through it, and it would show for one step at most before the
+return. The node and every link touching it fade first, while they are still
+drawn where they were. Then the new link fades in, and the tree moves to its
+`layout()`: the child's subtree rises one level and the nodes after the
+removed one in order move back a column. When the step ends, every node is
+where `rearrange()` would put it.
 
 ### Push
 
