@@ -5,6 +5,11 @@ import type { CoreStructure } from '../structure.ts';
 import { arrayOperations, randomArrayValues } from './array/operations.ts';
 import { CoreArray } from './array/structure.ts';
 import {
+  binarySearchTreeOperations,
+  randomBinarySearchTreeValues,
+} from './binary-search-tree/operations.ts';
+import { CoreBinarySearchTree } from './binary-search-tree/structure.ts';
+import {
   linkedListOperations,
   randomLinkedListValues,
 } from './linked-list/operations.ts';
@@ -40,6 +45,15 @@ const engines: Record<StructureId, StructureEngine> = {
       return list;
     },
     operations: linkedListOperations,
+  },
+  'binary-search-tree': {
+    create: () => {
+      const tree = new CoreBinarySearchTree(randomBinarySearchTreeValues());
+      tree.name = 'tree';
+
+      return tree;
+    },
+    operations: binarySearchTreeOperations,
   },
 };
 

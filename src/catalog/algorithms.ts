@@ -28,6 +28,14 @@ const algorithms: Record<string, Algorithm> = {
       'Points a new node at the current head and makes it the head, so the list grows in constant time.',
     args: [{ name: 'value', placeholder: 'e.g. 42' }],
   },
+  'binary-search-tree-insert': {
+    id: 'binary-search-tree-insert',
+    structureId: 'binary-search-tree',
+    title: 'Insert Value',
+    description:
+      'Descends left or right by comparing against each node, and hangs the new node off the first empty slot.',
+    args: [{ name: 'value', placeholder: 'e.g. 42' }],
+  },
 };
 
 // `Object.hasOwn` keeps ids such as `constructor` from resolving to

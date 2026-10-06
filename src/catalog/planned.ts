@@ -4,7 +4,7 @@ import type { StructureId } from './structures.ts';
 // algorithm moves to `algorithms.ts`, and a structure to `structures.ts`, in
 // the change that makes it run, and leaves this file in the same change.
 
-export type PlannedStructureId = 'binary-search-tree' | 'max-heap';
+export type PlannedStructureId = 'max-heap';
 
 export interface PlannedStructure {
   id: PlannedStructureId;
@@ -20,12 +20,6 @@ export interface PlannedAlgorithm {
 }
 
 export const plannedStructures: PlannedStructure[] = [
-  {
-    id: 'binary-search-tree',
-    title: 'Binary Search Tree',
-    description:
-      'A tree of nodes kept ordered, so every left child is smaller than its parent and every right child is larger.',
-  },
   {
     id: 'max-heap',
     title: 'Max Heap',
@@ -83,13 +77,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
     title: 'Remove',
     description:
       'Keeps a reference to the previous node while scanning, so the match can be unlinked by pointing past it.',
-  },
-  {
-    id: 'binary-search-tree-insert',
-    structureId: 'binary-search-tree',
-    title: 'Insert Value',
-    description:
-      'Descends left or right by comparing against each node, and hangs the new node off the first empty slot.',
   },
   {
     id: 'binary-search-tree-remove',

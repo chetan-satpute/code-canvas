@@ -22,10 +22,12 @@ src/engine/
   run.ts               CoreRun: one run's call stack, and its steps
   call.ts              CoreCall: one call's signature and memory
   step.ts              CoreStep: what the reader is shown at one point
+  pointers.ts          CorePointers: node variables drawn under their node
   algorithms/
     registry.ts        algorithm id → AlgorithmRunner
     array-linear-search.ts
     linked-list-insert-head.ts
+    binary-search-tree-insert.ts
   structures/
     registry.ts        StructureId → { create, operations }
     array/
@@ -36,6 +38,10 @@ src/engine/
       structure.ts     CoreLinkedList and its nodes, head and pointers
       operations.ts    randomize, insert at head, insert after, remove
       algorithm.ts     defineLinkedListAlgorithm
+    binary-search-tree/
+      structure.ts     CoreBinarySearchTree and its nodes, root and pointers
+      operations.ts    randomize, insert, remove
+      algorithm.ts     defineBinarySearchTreeAlgorithm
   testing/
     trace.ts           traceRun: plays a run to the end for a test
 ```
@@ -50,7 +56,8 @@ its first node keep the frame's coordinates at 0 or more.
 Every structure provides:
 
 - `toData()` and `restore(data)`: conversion to and from its plain form
-  (`number[]` for both an array and a linked list, head first for the list).
+  (`number[]` for all three: an array in order, a linked list head first, and
+  a binary search tree in preorder).
   `restore` replaces the contents in place, so the board keeps pointing at
   the same object.
 - `rearrange()`: recomputes every position it owns from its own.
@@ -178,7 +185,8 @@ serializes, so they follow it through a move or a fade:
 - **Pointers** are the listing's node variables:
   `list.setPointer('node', node)` and `list.clearPointer('node')`. Each is
   drawn under the node it holds, and pointers on one node share a label.
-  `restore` clears them.
+  `restore` clears them. The list keeps them in a `CorePointers`
+  (`pointers.ts`), which the binary search tree shares.
 
 A node held by a pointer is drawn even if the list cannot reach it. That way
 a node an algorithm has created but not yet linked in is on the canvas,
@@ -196,6 +204,41 @@ Every operation is instant:
 Insert after and Remove name their node by value, which is why random values
 are distinct. A value typed in can repeat, and the first match from the head
 is the one used. A target the list does not hold changes nothing.
+
+## The binary search tree
+
+A `CoreBinarySearchTreeNode` is a `CoreNode` with a `left` and a `right`
+link, each a `CoreEdge` like the list's `next`. `child(side)` reads one and
+`setChild(side, node)` makes a new edge for it. The tree holds only `root`,
+is named `tree`, and holds no duplicates: `insert(value)` links a new node
+into the one place the ordering leaves for it, does nothing for a value it
+already has, and leaves the layout to `rearrange()`.
+
+Its plain form is its values in preorder, a parent before its children.
+`restore` inserts them in the order given, and inserting a preorder rebuilds
+the same shape, so a tree round-trips through `toData` exactly. A random
+order gives whatever shape that insertion order makes, which is how
+Randomize builds an unbalanced tree.
+
+`rearrange()` gives each node the next column in order (`inorder()`), one
+`NODE_WIDTH` apart, and puts it on the row for its depth, levels two rows
+apart (`LEVEL_SPACING`). That draws no crossing links without measuring a
+subtree. Two nodes on one level always have an ancestor between them in
+order, so the cells beside a node are empty, and the row under it holds only
+its own links and its pointer. `root` is drawn above the root node, derived
+from it the way the list's `head` is. Pointers work as the list's do: a node
+a pointer holds is drawn even when the tree cannot reach it, and
+`rearrange()` leaves such a node where the algorithm put it.
+
+Every operation is instant:
+
+- **Randomize** replaces the contents with 5–7 distinct random values, in
+  random order. Every node has its own column, so seven draw 480px wide.
+- **Insert** inserts the value. One the tree already holds changes nothing.
+- **Remove** unlinks a leaf, lifts a lone child into the node's place, or,
+  for a node with two children, copies its in-order successor's value up and
+  removes the successor's node instead. A value the tree does not hold
+  changes nothing.
 
 ## Runs
 
@@ -308,6 +351,41 @@ comes first and the rise second. Done at once, the rising node would pass
 through the old head while it is still leaving the slot. The link stretches
 through the slide because both of its nodes hold it. When the step ends, every
 node is where `rearrange()` would put it.
+
+### Insert Value
+
+| Step                                      | Canvas                                                                 | Memory |
+| ----------------------------------------- | ---------------------------------------------------------------------- | ------ |
+| `enter`                                   | unchanged                                                              | value  |
+| `emptyCheck`                              | unchanged                                                              | value  |
+| `setRoot`                                 | on an empty tree, the node fades in as the root, `success`             | value  |
+| `start`                                   | pointer `node` under the root                                          | value  |
+| `equalCheck`                              | `node` `secondary`                                                     | value  |
+| `duplicate`                               | `node` `danger`                                                        | value  |
+| `lessCheck`                               | unchanged                                                              | value  |
+| `leftCheck`, `rightCheck`                 | unchanged                                                              | value  |
+| `setLeft`, `setRight`                     | the tree opens a column, then the node and its link fade in, `success` | value  |
+| `goLeft`, `goRight`                       | `node` back to `primary`, and the pointer moves to the child           | value  |
+| `rootReturn`, `leftReturn`, `rightReturn` | unchanged                                                              | value  |
+| `exit`                                    | colors reset, `node` gone                                              | value  |
+
+`while (true)` is not a step: it tests nothing, so `goLeft` leads straight to
+the next `equalCheck`. The pointer is put down a step before the node is
+colored, as Linear Search's cursor is.
+
+`node.left = new TreeNode(value)` creates and links the node in one
+statement, so unlike Insert at Head nothing is staged off the structure. The
+new node needs a column of its own, so before it appears, every node after
+the value in order slides one column right. When the new node goes on the
+left that includes `node` itself, and its pointer moves with it. Only then do
+the node and its link fade in, into the opened slot. When the step ends,
+every node is where `rearrange()` would put it.
+
+The descent pointer is `node` rather than `current` because of where it is
+drawn. A link to a child in the next column leaves the node at 45°, and where
+it crosses the top of the label's text it is about 25px to the side of the
+label's center. A seven-letter name reaches about 28px either side, so the
+link clips it; a four-letter name reaches about 16px and clears it.
 
 ### Adding an algorithm
 

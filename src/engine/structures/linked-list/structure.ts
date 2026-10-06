@@ -3,6 +3,7 @@ import type { CanvasFrame } from '#canvas/frame.ts';
 
 import { CoreEdge } from '../../elements/edge.ts';
 import { CoreNode } from '../../elements/node.ts';
+import { CorePointers } from '../../pointers.ts';
 import { CoreStructure } from '../../structure.ts';
 
 // From one node to the next. Unlike the array's flush row there is a node's
@@ -44,17 +45,16 @@ export class CoreLinkedListNode extends CoreNode {
 export class CoreLinkedList extends CoreStructure<number[]> {
   head: CoreLinkedListNode | null;
 
-  // Pointer variables of the listing, by name, drawn under the node they
-  // point at. A node a pointer holds is drawn even when the list cannot reach
-  // it, such as one just created and not yet linked in: the canvas shows what
-  // the code can reach.
-  private pointers: Map<string, CoreLinkedListNode>;
+  // A node a pointer holds is drawn even when the list cannot reach it, such
+  // as one just created and not yet linked in: the canvas shows what the code
+  // can reach.
+  private pointers: CorePointers<CoreLinkedListNode>;
 
   constructor(values: number[] = []) {
     super();
 
     this.head = null;
-    this.pointers = new Map();
+    this.pointers = new CorePointers();
     this.restore(values);
   }
 
@@ -129,11 +129,10 @@ export class CoreLinkedList extends CoreStructure<number[]> {
     };
 
     draw(this.head);
-    for (const node of this.pointers.values()) draw(node);
+    for (const node of this.pointers.nodes()) draw(node);
 
-    // `head` and the pointers are derived from the node they name when
-    // serializing, like a node's own labels, so they follow it through a move
-    // or a fade with no bookkeeping.
+    // Derived from the head node when serializing, like the pointers, so it
+    // follows the node through a move or a fade.
     if (this.head !== null) {
       frame.labels.push({
         x: this.head.x,
@@ -143,20 +142,6 @@ export class CoreLinkedList extends CoreStructure<number[]> {
       });
     }
 
-    // Pointers on the same node share one label (`previous current`) rather
-    // than drawing over each other.
-    const names = new Map<CoreLinkedListNode, string[]>();
-
-    for (const [name, node] of this.pointers)
-      names.set(node, [...(names.get(node) ?? []), name]);
-
-    for (const [node, onNode] of names) {
-      frame.labels.push({
-        x: node.x,
-        y: node.y + NODE_HEIGHT,
-        text: onNode.join(' '),
-        opacity: node.opacity,
-      });
-    }
+    this.pointers.serialize(frame);
   }
 }

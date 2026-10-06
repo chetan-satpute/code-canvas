@@ -1,6 +1,6 @@
 import type { StructureOperation } from './types.ts';
 
-export type StructureId = 'array' | 'linked-list';
+export type StructureId = 'array' | 'linked-list' | 'binary-search-tree';
 
 export interface Structure {
   id: StructureId;
@@ -57,6 +57,25 @@ const structures: Record<StructureId, Structure> = {
         id: 'remove',
         label: 'Remove',
         args: [{ name: 'target', placeholder: 'e.g. 13' }],
+      },
+    ],
+  },
+  'binary-search-tree': {
+    id: 'binary-search-tree',
+    title: 'Binary Search Tree',
+    description:
+      'A tree of nodes kept ordered, so every left child is smaller than its parent and every right child is larger.',
+    operations: [
+      { id: 'randomize', label: 'Randomize', args: [] },
+      {
+        id: 'insert',
+        label: 'Insert',
+        args: [{ name: 'value', placeholder: 'e.g. 42' }],
+      },
+      {
+        id: 'remove',
+        label: 'Remove',
+        args: [{ name: 'value', placeholder: 'e.g. 13' }],
       },
     ],
   },
