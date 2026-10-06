@@ -129,7 +129,7 @@
   --amber-950: #2d1906;
   --amber-975: #1b0f04;
 
-  /* teal — derived cool complement to the blues — success family (seed #2E8C82) */
+  /* teal — derived cool complement to the blues — canvas success nodes (seed #2E8C82) */
   --teal-25: #fafcfc;
   --teal-50: #f4f9f8;
   --teal-100: #e7f1f0;
@@ -144,6 +144,22 @@
   --teal-900: #113e39;
   --teal-950: #0b2825;
   --teal-975: #071816;
+
+  /* green — derived — success family (seed #2A7040) */
+  --green-25: #fafcfb;
+  --green-50: #f4f9f5;
+  --green-100: #e7f1ea;
+  --green-150: #d0e9d9;
+  --green-200: #b9dfc6;
+  --green-300: #8bd0a3;
+  --green-400: #52b574;
+  --green-500: #368e56;
+  --green-600: #2a7040;
+  --green-700: #225c34;
+  --green-800: #194528;
+  --green-900: #11301c;
+  --green-950: #0b1f12;
+  --green-975: #07130b;
 
   /* ---------- Semantic tokens — reference the primitives above ---------- */
 
@@ -191,10 +207,10 @@
   --destructive-foreground: var(--pearl-50);
 
   /* Success */
-  --success: var(--teal-400);
-  --success-hover: var(--teal-300);
-  --success-active: var(--teal-500);
-  --success-foreground: var(--midnight-950);
+  --success: var(--green-600);
+  --success-hover: var(--green-500);
+  --success-active: var(--green-700);
+  --success-foreground: var(--pearl-50);
 
   /* Warning */
   --warning: var(--amber-500);
@@ -224,7 +240,7 @@
   /* Canvas — read by src/canvas/theme.ts, since a canvas cannot resolve
      var(). Not mapped into @theme: no utility uses them.
      Node fills are the step of each family that keeps the pearl node text
-     above 4.5:1, so success is teal-700 rather than --success, and they sit
+     above 4.5:1, so success is teal-700, and they sit
      close in luminance so no variant glares beside the others. Edges and
      labels share one quiet grey-blue (8:1 on the background) and leave the
      algorithm's state to the nodes. Rim and sheen are white at low alpha so
@@ -396,6 +412,20 @@
   --color-teal-900: var(--teal-900);
   --color-teal-950: var(--teal-950);
   --color-teal-975: var(--teal-975);
+  --color-green-25: var(--green-25);
+  --color-green-50: var(--green-50);
+  --color-green-100: var(--green-100);
+  --color-green-150: var(--green-150);
+  --color-green-200: var(--green-200);
+  --color-green-300: var(--green-300);
+  --color-green-400: var(--green-400);
+  --color-green-500: var(--green-500);
+  --color-green-600: var(--green-600);
+  --color-green-700: var(--green-700);
+  --color-green-800: var(--green-800);
+  --color-green-900: var(--green-900);
+  --color-green-950: var(--green-950);
+  --color-green-975: var(--green-975);
 
   /* ---------- Semantics → Tailwind utilities (bg-primary, text-foreground, …) ---------- */
 

@@ -21,7 +21,7 @@ function RunControls(props: RunControlsProps) {
 
       <div className="col-span-2 grid">
         {finished ? (
-          <Button onClick={onFinish}>
+          <Button variant="success" onClick={onFinish}>
             Finish
             <Icon name="check" />
           </Button>

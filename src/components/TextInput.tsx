@@ -18,7 +18,7 @@ interface TextInputProps {
 }
 
 const inputClassesBase =
-  'bg-surface-2 text-foreground font-en rounded-lg border px-3 py-2 text-sm outline-none focus:ring-3';
+  'bg-surface-2 text-foreground font-code rounded-lg border px-3 py-2 text-sm outline-none focus:ring-3';
 
 // A rejected field carries the same ring focus does, not just a recolored
 // border: a 1px hairline on a dark card is easy to miss while the eye is on

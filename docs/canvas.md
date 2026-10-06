@@ -73,8 +73,8 @@ An algorithm says what it is doing to a value by setting the node's
 `variant`, not a color: `primary` is the resting state, `secondary` and
 `tertiary` mark what is being looked at, and `success` and `danger` mark an
 outcome. Each variant's fill is the step of its family that keeps the node
-text above 4.5:1. That is why `success` is `--teal-700` rather than the
-lighter `--success`.
+text above 4.5:1. That is why `success` is `--teal-700` rather than a lighter
+teal.
 
 ## A step is a film strip
 
