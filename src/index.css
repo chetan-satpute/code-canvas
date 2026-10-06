@@ -220,6 +220,27 @@
   --scrollbar-thumb-hover: var(--midnight-400);
   --scrollbar-thumb-active: var(--indigo-400);
 
+  /* Canvas — read by src/canvas/theme.ts, since a canvas cannot resolve
+     var(). Not mapped into @theme: no utility uses them.
+     Node fills are the step of each family that keeps the pearl node text
+     above 4.5:1, so success is teal-700 rather than --success, and they sit
+     close in luminance so no variant glares beside the others. Edges and
+     labels share one quiet grey-blue (8:1 on the background) and leave the
+     algorithm's state to the nodes. Rim and sheen are white at low alpha so
+     they look the same on every fill; they are rgb() literals rather than a
+     color-mix() of a token because Chrome's canvas parses color-mix() but
+     not every browser's canvas is known to. */
+  --canvas-node-primary: var(--midnight-700);
+  --canvas-node-secondary: var(--indigo-500);
+  --canvas-node-tertiary: var(--sapphire-600);
+  --canvas-node-success: var(--teal-700);
+  --canvas-node-danger: var(--garnet-500);
+  --canvas-node-foreground: var(--pearl-100);
+  --canvas-node-rim: rgb(244 239 226 / 0.18);
+  --canvas-node-sheen: rgb(255 255 255 / 0.08);
+  --canvas-edge: var(--midnight-300);
+  --canvas-label: var(--midnight-300);
+
   /* ---------- Typography — body / display / script per language.
      Kalam carries both scripts (it ships Latin + Devanagari glyphs), so it
      covers font-en-script and font-hi-script with one family.
