@@ -4,8 +4,7 @@ import type { StructureId } from './structures.ts';
 // algorithm moves to `algorithms.ts`, and a structure to `structures.ts`, in
 // the change that makes it run, and leaves this file in the same change.
 
-export type PlannedStructureId =
-  'linked-list' | 'binary-search-tree' | 'max-heap';
+export type PlannedStructureId = 'binary-search-tree' | 'max-heap';
 
 export interface PlannedStructure {
   id: PlannedStructureId;
@@ -21,12 +20,6 @@ export interface PlannedAlgorithm {
 }
 
 export const plannedStructures: PlannedStructure[] = [
-  {
-    id: 'linked-list',
-    title: 'Linked List',
-    description:
-      'A linear chain of nodes, where each node holds a value and a reference to the next node in the sequence.',
-  },
   {
     id: 'binary-search-tree',
     title: 'Binary Search Tree',
@@ -76,13 +69,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
     title: 'Remove Value',
     description:
       'Closes the gap left at an index by shifting every later element one place back, then drops the last slot.',
-  },
-  {
-    id: 'linked-list-insert-head',
-    structureId: 'linked-list',
-    title: 'Insert at Head',
-    description:
-      'Points a new node at the current head and makes it the head, so the list grows in constant time.',
   },
   {
     id: 'linked-list-insert-after',

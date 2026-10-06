@@ -20,6 +20,14 @@ const algorithms: Record<string, Algorithm> = {
       'Walks the array from the front, comparing every element until the target turns up or the end is reached.',
     args: [{ name: 'target', placeholder: 'e.g. 42' }],
   },
+  'linked-list-insert-head': {
+    id: 'linked-list-insert-head',
+    structureId: 'linked-list',
+    title: 'Insert at Head',
+    description:
+      'Points a new node at the current head and makes it the head, so the list grows in constant time.',
+    args: [{ name: 'value', placeholder: 'e.g. 42' }],
+  },
 };
 
 // `Object.hasOwn` keeps ids such as `constructor` from resolving to

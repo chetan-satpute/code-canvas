@@ -1,6 +1,11 @@
+// A structure with no literal to print, such as a linked list. The signature
+// names it bare, `insertHead(list, value: 42)`, and memory leaves it out: it
+// is read on the canvas.
+export const STRUCTURE = Symbol('structure');
+
 // What a variable can hold. Only what the algorithms so far need: widen it
 // when an algorithm passes something else.
-export type CoreValue = number | number[];
+export type CoreValue = number | number[] | typeof STRUCTURE;
 
 export interface CoreVariable {
   name: string;
@@ -11,15 +16,22 @@ export interface CoreVariable {
 // `CoreCall`, the way a `CanvasFrame` is the snapshot of a structure.
 export interface CallStackEntry {
   signature: string;
-  // Name and value, scalars only. An array is read on the canvas and printed
-  // whole in the signature, so memory does not repeat it.
+  // Name and value, scalars only. An array or a structure is read on the
+  // canvas, and an array is printed whole in the signature too, so memory
+  // repeats neither.
   memory: [name: string, value: string][];
 }
 
-function formatValue(value: CoreValue): string {
+function formatValue(value: number | number[]): string {
   if (Array.isArray(value)) return `[${value.join(', ')}]`;
 
   return value.toString();
+}
+
+function formatParameter({ name, value }: CoreVariable): string {
+  if (value === STRUCTURE) return name;
+
+  return `${name}: ${formatValue(value)}`;
 }
 
 // One function call in progress, and everything the reader sees of it: its
@@ -65,14 +77,14 @@ export class CoreCall {
   serialize(): CallStackEntry {
     const parameters = this.variables
       .slice(0, this.parameterCount)
-      .map((variable) => `${variable.name}: ${formatValue(variable.value)}`)
+      .map(formatParameter)
       .join(', ');
 
-    return {
-      signature: `${this.name}(${parameters})`,
-      memory: this.variables
-        .filter((variable) => !Array.isArray(variable.value))
-        .map((variable) => [variable.name, formatValue(variable.value)]),
-    };
+    const memory: CallStackEntry['memory'] = [];
+
+    for (const { name, value } of this.variables)
+      if (typeof value === 'number') memory.push([name, formatValue(value)]);
+
+    return { signature: `${this.name}(${parameters})`, memory };
   }
 }

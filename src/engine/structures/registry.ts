@@ -4,6 +4,11 @@ import type { OperationRunner } from '../operation.ts';
 import type { CoreStructure } from '../structure.ts';
 import { arrayOperations, randomArrayValues } from './array/operations.ts';
 import { CoreArray } from './array/structure.ts';
+import {
+  linkedListOperations,
+  randomLinkedListValues,
+} from './linked-list/operations.ts';
+import { CoreLinkedList } from './linked-list/structure.ts';
 
 interface StructureEngine {
   create: () => CoreStructure;
@@ -26,6 +31,15 @@ const engines: Record<StructureId, StructureEngine> = {
       return array;
     },
     operations: arrayOperations,
+  },
+  'linked-list': {
+    create: () => {
+      const list = new CoreLinkedList(randomLinkedListValues());
+      list.name = 'list';
+
+      return list;
+    },
+    operations: linkedListOperations,
   },
 };
 

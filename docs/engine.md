@@ -25,12 +25,17 @@ src/engine/
   algorithms/
     registry.ts        algorithm id → AlgorithmRunner
     array-linear-search.ts
+    linked-list-insert-head.ts
   structures/
     registry.ts        StructureId → { create, operations }
     array/
       structure.ts     CoreArray, with its cursors
       operations.ts    randomize, sort, insert, remove
       algorithm.ts     defineArrayAlgorithm
+    linked-list/
+      structure.ts     CoreLinkedList and its nodes, head and pointers
+      operations.ts    randomize, insert at head, insert after, remove
+      algorithm.ts     defineLinkedListAlgorithm
   testing/
     trace.ts           traceRun: plays a run to the end for a test
 ```
@@ -45,8 +50,9 @@ its first node keep the frame's coordinates at 0 or more.
 Every structure provides:
 
 - `toData()` and `restore(data)`: conversion to and from its plain form
-  (`number[]` for an array). `restore` replaces the contents in place, so the
-  board keeps pointing at the same object.
+  (`number[]` for both an array and a linked list, head first for the list).
+  `restore` replaces the contents in place, so the board keeps pointing at
+  the same object.
 - `rearrange()`: recomputes every position it owns from its own.
 - `serializeContents(frame)`: writes its nodes and edges into a frame.
 
@@ -78,10 +84,10 @@ edited.
 
 ## Writing a tween
 
-Nothing uses these yet. Structure operations are instant, and Linear Search
-only recolors. The tweens are there for algorithm runs that move values,
-where the movement is what the reader watches. A tween
-is written as "mutate a little, push a frame", repeated. The helpers in
+Structure operations are instant, and Linear Search only recolors. The
+tweens are for algorithm runs that move values, where the movement is what
+the reader watches; Insert at Head is the first to use them. A tween is
+written as "mutate a little, push a frame", repeated. The helpers in
 `animation.ts` do this for movement and opacity:
 
 - `animateMoveMany(board, moves)` moves a group together and pushes one frame
@@ -152,6 +158,45 @@ Every operation is instant:
 The index for Insert is clamped to `[0, length]`, and for Remove to
 `[0, length − 1]`. Removing from an empty array does nothing.
 
+## The linked list
+
+A `CoreLinkedListNode` is a `CoreNode` with a `next` link. The link is the
+`CoreEdge` itself, not a reference to the successor, and `setNext(node)`
+makes a new edge each time, since an edge is drawn from the node it starts
+at. A node writes its own link when it serializes, so a walk that visits
+every node writes every link exactly once.
+
+`CoreLinkedList` holds only `head`. `nodes()` follows `next` from it, which
+is the only way to reach a node, and `rearrange()` places the nodes it
+reaches two cells apart (`LINK_SPACING`): the gap is where the link is drawn.
+The list is named `list`, and it has no indices.
+
+Two kinds of label are derived from the node they name when the list
+serializes, so they follow it through a move or a fade:
+
+- `head` is drawn above the head node.
+- **Pointers** are the listing's node variables:
+  `list.setPointer('node', node)` and `list.clearPointer('node')`. Each is
+  drawn under the node it holds, and pointers on one node share a label.
+  `restore` clears them.
+
+A node held by a pointer is drawn even if the list cannot reach it. That way
+a node an algorithm has created but not yet linked in is on the canvas,
+because the code can reach it. `rearrange()` leaves such a node where the
+algorithm put it.
+
+Every operation is instant:
+
+- **Randomize** replaces the contents with 4–6 distinct random values. A node
+  draws two cells from the next, so six already take 720px.
+- **Insert at head** links a new node in front of the head.
+- **Insert after** links a new node behind the first node holding the target.
+- **Remove** unlinks the first node holding the target.
+
+Insert after and Remove name their node by value, which is why random values
+are distinct. A value typed in can repeat, and the first match from the head
+is the one used. A target the list does not hold changes nothing.
+
 ## Runs
 
 A run steps an algorithm against its listing. The listing's line markers
@@ -185,6 +230,11 @@ kinds the catalog declares.
 The call stack lives on the run, not on the board. A run that ends or is
 abandoned is just dropped, and the board has nothing left to clear.
 
+A parameter's value is a number, an array or `STRUCTURE`, for a structure
+with no literal to print, such as a linked list. The signature names that
+kind of parameter bare (`insertHead(list, value: 42)`), as
+[code-highlighting.md](code-highlighting.md) expects.
+
 A `CoreCall` keeps parameters in declaration order, then locals in the order
 they were first set. `set(name, value)` declares a local or updates any
 variable in place. `clear(name)` drops a local that has gone out of scope.
@@ -192,8 +242,8 @@ Parameters are never dropped. A call serializes into two views:
 
 - The **signature**, built from the parameters, with arrays printed whole:
   `linearSearch(array: [3, 5, 1], target: 42)`.
-- **Memory**, which holds the scalar variables only. The array is already on
-  the canvas and in the signature, so memory does not repeat it. The memory
+- **Memory**, which holds the scalar variables only. An array or a structure
+  is already on the canvas, so memory does not repeat it. The memory
   card shows the innermost call, which is the one running.
 
 ### The last step is returned
@@ -241,6 +291,23 @@ array serializes, and `restore` clears every cursor.
 A failed comparison sets the cell back to `primary` and steps to `loop` with
 the next `i`. That includes the final check, with `i` past the end, which is
 what ends the loop.
+
+### Insert at Head
+
+| Step      | Canvas                                                                          | Memory |
+| --------- | ------------------------------------------------------------------------------- | ------ |
+| `enter`   | unchanged                                                                       | value  |
+| `create`  | the new node fades in, `secondary`, one row below the head, with pointer `node` | value  |
+| `link`    | its link to the head fades in; none on an empty list                            | value  |
+| `setHead` | the list slides one place along, then `head` moves to the node as it rises in   | value  |
+| `exit`    | color reset, `node` gone                                                        | value  |
+
+`list.head = node` only reassigns a pointer. The canvas lays the list out in
+order, though, so the node joins the row as the reader watches. The slide
+comes first and the rise second. Done at once, the rising node would pass
+through the old head while it is still leaving the slot. The link stretches
+through the slide because both of its nodes hold it. When the step ends, every
+node is where `rearrange()` would put it.
 
 ### Adding an algorithm
 
