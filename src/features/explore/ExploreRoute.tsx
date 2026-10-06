@@ -11,6 +11,7 @@ import ExploreHeader from './components/ExploreHeader.tsx';
 import MemoryCard from './components/MemoryCard.tsx';
 import RunControls from './components/RunControls.tsx';
 import StructureCard from './components/StructureCard.tsx';
+import { createPlaceholderFrame } from './utils/placeholderFrame.ts';
 
 // Placeholders until the engine exists.
 const placeholderFrames = [
@@ -22,6 +23,8 @@ const placeholderVariables: [string, string][] = [
   ['i', '0'],
   ['j', '2'],
 ];
+// Module-level so its identity is stable: a new array would replay the step.
+const placeholderCanvasFrames = [createPlaceholderFrame()];
 
 /*
  * Both views share one layout, and the canvas and the code card render
@@ -88,7 +91,7 @@ function ExploreRoute() {
       <main className={layoutClasses}>
         <div className={canvasColumnClasses}>
           <div className={canvasClasses}>
-            <CanvasCard />
+            <CanvasCard frames={placeholderCanvasFrames} />
           </div>
 
           {view === 'planning' ? (
