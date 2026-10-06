@@ -7,3 +7,4 @@ none of the context of the conversation that produced it.
 | Document                                     | Covers                                                                    |
 | -------------------------------------------- | ------------------------------------------------------------------------- |
 | [code-highlighting.md](code-highlighting.md) | How listings are syntax-highlighted at build time and how lines are named |
+| [canvas.md](canvas.md)                       | How nodes, edges and labels are modelled, drawn, themed and played        |
