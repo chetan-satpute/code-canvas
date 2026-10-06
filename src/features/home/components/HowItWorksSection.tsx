@@ -37,7 +37,7 @@ function HowItWorksSection() {
           {steps.map((step, index) => (
             <li
               key={step.title}
-              className="bg-card border-border rounded-xl border p-5 sm:p-6"
+              className="lit-surface relative rounded-2xl p-5 sm:p-6"
             >
               <span className="font-code text-accent text-sm">
                 {String(index + 1).padStart(2, '0')}

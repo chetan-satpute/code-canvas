@@ -14,7 +14,7 @@ function Card(props: CardProps) {
   // `h-full` lets a parent give the card a height (a grid row, an aspect
   // ratio); in an auto-height parent it resolves to the content height.
   const containerClasses =
-    'bg-card border-border flex h-full min-h-0 flex-col overflow-hidden rounded-xl border';
+    'lit-surface relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl';
 
   const bodyClasses = cn('min-h-0 flex-1', padded && 'p-5');
 

@@ -9,7 +9,8 @@
  *                  so bg-primary, text-muted-foreground, bg-indigo-400,
  *                  ring-ring, border-input etc. all work out of the box
  *   @layer base    scrollbar styling, driven by the --scrollbar-* tokens
- *   @utility       no-scrollbar, for scrollers that should not show one
+ *   @utility       no-scrollbar, for scrollers that should not show one;
+ *                  lit-surface, the card surface
  */
 
 @import 'tailwindcss';
@@ -240,6 +241,14 @@
   --canvas-node-sheen: rgb(255 255 255 / 0.08);
   --canvas-edge: var(--midnight-300);
   --canvas-label: var(--midnight-300);
+
+  /* Lit surface — read by the lit-surface utility below. White at low alpha,
+     so the rim and sheen look the same on any fill. */
+  --lit-sheen: rgb(255 255 255 / 0.04);
+  --lit-rim: rgb(255 255 255 / 0.18);
+  --lit-rim-shade: rgb(255 255 255 / 0.04);
+  --lit-edge-glow: rgb(255 255 255 / 0.03);
+  --lit-shadow: rgb(0 0 0 / 0.35);
 
   /* ---------- Typography — body / display / script per language.
      Kalam carries both scripts (it ships Latin + Devanagari glyphs), so it
@@ -523,6 +532,47 @@
   }
 }
 
+/* A solid card surface lit from the top-left: a faint sheen down from the
+   top, a bright top edge, and a rim that fades from lit corners to shaded
+   sides. The element must be `relative` and give itself a border-radius; the
+   rim inherits it.
+
+   The rim is a 1px gradient ring on ::before rather than a border, because a
+   border cannot fade from lit to shaded around its length. The mask keeps
+   only the padding box: the content-box layer is excluded from the full
+   layer, leaving the ring. */
+@utility lit-surface {
+  background:
+    linear-gradient(to bottom, var(--lit-sheen), transparent 40%), var(--card);
+  box-shadow:
+    inset 0 1px 0 var(--lit-rim),
+    inset 0 0 24px var(--lit-edge-glow),
+    0 12px 40px -8px var(--lit-shadow);
+  /* Keeps the rim's z-index inside the card; without it the rim joins the
+     page's stacking context and paints over anything overlapping the card. */
+  isolation: isolate;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    padding: 1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      var(--lit-rim),
+      var(--lit-rim-shade) 40%,
+      var(--lit-rim-shade) 60%,
+      var(--lit-rim)
+    );
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+}
+
 /*
  * Dark-mode-first: there's no light/dark split above, the primitives
  * themselves define one deliberate dark palette. To add a light mode
@@ -530,7 +580,8 @@
  * a `.light` class or `@media (prefers-color-scheme: light)` block —
  * same pattern shadcn/ui uses for its .dark override. Set
  * `color-scheme: light` in that same block and re-point the four
- * --scrollbar-* tokens.
+ * --scrollbar-* tokens and the --lit-* tokens, whose white rim and
+ * sheen vanish on a light card.
  *
  * Fonts aren't loaded by this file — pull them in however this project
  * already loads fonts (self-hosted @font-face, next/font, a bundler
