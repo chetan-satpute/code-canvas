@@ -29,6 +29,38 @@ export class CoreBoard {
     this.structures.splice(index, 1);
   }
 
+  // Captures which structures are on the board and what each holds, and
+  // returns the undo. Stopping a run midway calls it, so an abandoned run
+  // leaves nothing behind. Membership is captured as well as contents because
+  // an algorithm may add structures of its own, and placement as well because
+  // a tween may move or fade a whole structure, which `toData` does not hold.
+  snapshot(): () => void {
+    const saved = this.structures.map((structure) => ({
+      structure,
+      data: structure.toData(),
+      x: structure.x,
+      y: structure.y,
+      opacity: structure.opacity,
+      name: structure.name,
+    }));
+
+    return () => {
+      this.structures = saved.map(({ structure }) => structure);
+
+      // Placed before `restore`, which lays the contents out from `x/y`.
+      for (const { structure, data, x, y, opacity, name } of saved) {
+        structure.x = x;
+        structure.y = y;
+        structure.opacity = opacity;
+        structure.name = name;
+        structure.restore(data);
+      }
+
+      // Frames pushed by the undone work show a board that no longer exists.
+      this.pending = [];
+    };
+  }
+
   toFrame(): CanvasFrame {
     const frame = createCanvasFrame();
 

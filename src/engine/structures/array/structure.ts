@@ -1,4 +1,4 @@
-import { NODE_WIDTH } from '#canvas/elements/node.ts';
+import { NODE_HEIGHT, NODE_WIDTH } from '#canvas/elements/node.ts';
 import type { CanvasFrame } from '#canvas/frame.ts';
 
 import { CoreNode } from '../../elements/node.ts';
@@ -9,10 +9,16 @@ import { CoreStructure } from '../../structure.ts';
 export class CoreArray extends CoreStructure<number[]> {
   nodes: CoreNode[];
 
+  // Index variables of the listing, by name, drawn under the cell they index.
+  // Held as indices rather than on the nodes, because an index can point
+  // past the last cell: `i === array.length` ends a loop.
+  private cursors: Map<string, number>;
+
   constructor(values: number[] = []) {
     super();
 
     this.nodes = [];
+    this.cursors = new Map();
     this.restore(values);
   }
 
@@ -22,7 +28,16 @@ export class CoreArray extends CoreStructure<number[]> {
 
   restore(values: number[]) {
     this.nodes = values.map((value) => new CoreNode(value));
+    this.cursors.clear();
     this.rearrange();
+  }
+
+  setCursor(name: string, index: number) {
+    this.cursors.set(name, index);
+  }
+
+  clearCursor(name: string) {
+    this.cursors.delete(name);
   }
 
   rearrange() {
@@ -39,5 +54,21 @@ export class CoreArray extends CoreStructure<number[]> {
 
   protected serializeContents(frame: CanvasFrame) {
     for (const node of this.nodes) node.serialize(frame);
+
+    // Cursors on the same cell share one label (`i j`) rather than drawing
+    // over each other.
+    const names = new Map<number, string[]>();
+
+    for (const [name, index] of this.cursors)
+      names.set(index, [...(names.get(index) ?? []), name]);
+
+    for (const [index, onCell] of names) {
+      frame.labels.push({
+        x: this.x + index * NODE_WIDTH,
+        y: this.y + NODE_HEIGHT,
+        text: onCell.join(' '),
+        opacity: this.opacity,
+      });
+    }
   }
 }
