@@ -121,7 +121,8 @@ wider scrolls inside the card.
 ## Left for the engine
 
 These were found in v2's code and belong with the engine rather than with
-the elements, so they are recorded here for when it is built:
+the elements. The engine's structures and operations exist now (see
+[engine.md](engine.md)); these wait for the parts that need them:
 
 - **Marking a node.** v2's algorithms wrote the same pair of helpers four
   times: set a node's variant and put a variable's name under it, then put
@@ -130,13 +131,6 @@ the elements, so they are recorded here for when it is built:
 - **Naming cursors on a row.** Three algorithms each joined the names of
   cursors that land on one cell into a single label (`'i j'`). That belongs in
   one shared module over a row of nodes.
-- **A structure's name label.** Every v2 structure declared its own name
-  `CoreLabel`, placed it one cell to its left and serialized it. That belongs
-  on the base structure class.
-- **The animator no longer needs `rearrange()` on a node.** A node's labels
-  are derived when it serializes, so a move only has to change `x` and `y`.
-  `rearrange()` remains meaningful for a structure, which lays out its nodes
-  from its own position.
 - **An edge's opacity could follow its nodes.** A node's labels take its
   opacity, but an edge keeps its own, so a node fading out leaves a
   full-strength arrow pointing at it; v2 faded such edges by hand. Serializing
