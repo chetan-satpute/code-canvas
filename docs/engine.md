@@ -31,6 +31,8 @@ src/engine/
       structure.ts     CoreArray, with its cursors
       operations.ts    randomize, sort, insert, remove
       algorithm.ts     defineArrayAlgorithm
+  testing/
+    trace.ts           traceRun: plays a run to the end for a test
 ```
 
 ## Structures
@@ -250,3 +252,6 @@ what ends the loop.
 3. Register it in `src/engine/algorithms/registry.ts`. The explore route
    treats an algorithm that has no runner, or no listing, as one it cannot
    show.
+4. Test it in `src/engine/algorithms/<id>.test.ts` against the real listing,
+   with `traceRun` from `src/engine/testing/trace.ts`, so a step naming a
+   line the listing lacks fails `pnpm test` rather than the explore page.
