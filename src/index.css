@@ -9,6 +9,7 @@
  *                  so bg-primary, text-muted-foreground, bg-indigo-400,
  *                  ring-ring, border-input etc. all work out of the box
  *   @layer base    scrollbar styling, driven by the --scrollbar-* tokens
+ *   @utility       no-scrollbar, for scrollers that should not show one
  */
 
 @import 'tailwindcss';
@@ -486,6 +487,18 @@
 
   ::-webkit-scrollbar-thumb:active {
     background-color: var(--scrollbar-thumb-active);
+  }
+}
+
+/* Still scrolls by wheel, trackpad, touch, and keyboard when the element can
+   take focus; only the bar is hidden. Both rules are needed: Firefox reads scrollbar-width, while
+   Chromium and Safari need the pseudo-element hidden too, because the
+   ::-webkit-scrollbar rules above would otherwise still draw it. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
 

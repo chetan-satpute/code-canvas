@@ -56,8 +56,11 @@ const underCanvasClasses = 'order-last lg:order-none lg:min-h-0 lg:flex-2';
 const codeClasses = 'lg:w-104 lg:shrink-0 xl:w-128';
 
 // Call stack signatures need the wider share; memory holds short name/value
-// rows.
-const stackAndMemoryClasses = 'grid gap-4 sm:grid-cols-5 lg:grid-rows-1';
+// rows. `grid-cols-1` is `minmax(0, 1fr)`: without it the single column below
+// sm is an implicit auto track, which grows to fit an unwrapped signature and
+// pushes the page wider instead of letting the entry scroll.
+const stackAndMemoryClasses =
+  'grid grid-cols-1 gap-4 sm:grid-cols-5 lg:grid-rows-1';
 
 type View = 'planning' | 'running';
 
