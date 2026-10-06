@@ -27,6 +27,7 @@ src/engine/
   algorithms/
     registry.ts        algorithm id → AlgorithmRunner
     array-linear-search.ts
+    array-merge-sort.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
     max-heap-push.ts
@@ -85,6 +86,11 @@ reader was last shown anything.
 - `drainFrames()` hands over the queued frames and empties the queue. If
   nothing was pushed, it returns one frame of the board as it stands. That
   way a change with no animation, such as an instant reorder, is still shown.
+- `float(node)` and `unfloat(node)` hold a value in flight that belongs to no
+  structure, which the frame draws over everything (see
+  [canvas.md](canvas.md)). An algorithm floats a node and unfloats it within
+  one step, so no step shows one, and the snapshot's undo drops any a
+  throwing run left behind.
 
 The explore page's `useExploreSession` (`src/features/explore/hooks/`) keeps
 the board, its structure, that structure's operations and the run in progress
@@ -318,7 +324,9 @@ kinds the catalog declares.
 - `run.step(anchor)` drains the board and builds the step. It throws on an
   anchor the listing doesn't define. Otherwise a mismatch between algorithm
   and listing would show up as a highlight on a plausible-looking wrong line.
-- `run.call(name, parameters)` pushes a `CoreCall`.
+- `run.call(name, parameters)` pushes a `CoreCall`, and `run.return(anchor)`
+  builds the innermost call's closing-brace step and then pops it, so that
+  step still shows the call being left.
 
 The call stack lives on the run, not on the board. A run that ends or is
 abandoned is just dropped, and the board has nothing left to clear.
@@ -478,6 +486,59 @@ index and a label is drawn over a node; the climbing value takes the near
 lane. Only once the cells have landed do the tree's two nodes trade their
 values, in place, in one frame. When the step ends, every cell and node is
 where `rearrange()` would put it.
+
+### Merge Sort
+
+Merge Sort takes no arguments. Each call of `mergeSort` is its own generator,
+and a call recurses with `yield*`, so one step is still one `next()` however
+deep the run is. A call's closing-brace step (`exit`, `mergeExit`) is its
+return value rather than a yield: the outermost one is the run's last step,
+and a caller yields the step it gets back. The call is popped right after that
+step is built.
+
+| Step                                          | Canvas                                                                          | Memory  |
+| --------------------------------------------- | ------------------------------------------------------------------------------- | ------- |
+| `enter`                                       | the array this call sorts is named `array`                                      | —       |
+| `base`                                        | unchanged                                                                       | —       |
+| `sorted`                                      | an array of one `success`                                                       | —       |
+| `mid`                                         | cursor `mid` under its cell                                                     | mid     |
+| `left`, `right`                               | the half fades in under the cells it was copied from, named `left` or `right`   | mid     |
+| `sortLeft`, `sortRight`                       | before the call, and again once it returns                                      | mid     |
+| `merge`                                       | before the call, and again once it returns with the array `success`             | mid     |
+| `mergeEnter`                                  | `mid` gone                                                                      | —       |
+| `startLeft`, `startRight`, `startArray`       | cursor `i` under `left`, `j` under `right`, `k` under `array`                   | i, j, k |
+| `loop`, `drainLeft`, `drainRight`             | unchanged; the check that ends the loop, with an index past its half, is a step | i, j, k |
+| `compare`                                     | `left[i]` and `right[j]` `secondary`                                            | i, j, k |
+| `takeLeft`, `takeRight`, `drainLeftTake`, …   | a copy travels from the half into `array[k]`, which takes the value, `success`  | i, j, k |
+| `nextLeft`, `nextRight`, `drainLeftNext`, …   | the value read back to `primary`, its cursor one along                          | i, j, k |
+| `nextSlot`, `drainLeftSlot`, `drainRightSlot` | `k` one along                                                                   | i, j, k |
+| `mergeExit`                                   | `i`, `j` and `k` gone                                                           | —       |
+| `exit`                                        | colors reset, `mid` gone, the halves fade out and leave the board               | —       |
+
+`array[k] = left[i]` is an assignment. It copies a value into a cell that
+already exists: `left` and `right` are read and never change, and `array`
+keeps every cell it had. So what travels is a copy that belongs to neither
+array, held by `board.float`, and the cell it lands on takes the value where
+it stands. The copy rises out of the half, goes along the row under `array`
+and up into the cell; going straight there, it would cross the cells in
+between. Moving the halves' own nodes up into `array` would sort just as
+well, but it would show the reader a different algorithm from the listing.
+
+`array.slice` makes a new array of copies, so each half fades in two rows
+under the cells it was copied from (`HALF_OFFSET`, three rows: `array`'s
+cursors and the copies' lane, then the half's indices). The right half starts
+one cell further along, which leaves room for its name between the two. The
+halves go out of scope with the call's return, which is when they fade out
+and leave the board.
+
+The canvas names only what the running call can reach, the way memory shows
+only its variables. Every call calls the array it sorts `array`, so while a
+deeper call runs, its caller's names and `mid` come off, and they go back on
+when it returns. `merge` has no `mid`, so it comes off for that call too.
+
+Signatures print the arrays whole. `merge` writes into an array that both it
+and its caller take as `array`, so each write updates both signatures and
+neither shows a value the array no longer holds.
 
 ### Adding an algorithm
 

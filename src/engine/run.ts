@@ -25,6 +25,15 @@ export class CoreRun {
     return call;
   }
 
+  // The innermost call's last step, on its closing brace, and then the pop.
+  // The step is built first so the reader sees the call it is leaving.
+  return(anchor: string): CoreStep {
+    const step = this.step(anchor);
+    this.callStack.pop();
+
+    return step;
+  }
+
   // The run as it stands, at a named line of the listing. Takes the frames
   // pushed since the last step, so any movement since then plays with it.
   step(anchor: string): CoreStep {

@@ -1,5 +1,6 @@
 import { type CanvasFrame, createCanvasFrame } from '#canvas/frame.ts';
 
+import type { CoreNode } from './elements/node.ts';
 import type { CoreStructure } from './structure.ts';
 
 // Everything on the canvas, and the frames drawn since the reader was last
@@ -7,12 +8,16 @@ import type { CoreStructure } from './structure.ts';
 export class CoreBoard {
   structures: CoreStructure[];
 
+  // Values in flight that belong to no structure, drawn over everything.
+  private floating: CoreNode[];
+
   // Frames pushed since the last drain. Empty most of the time: it fills only
   // while a tween is being written out.
   private pending: CanvasFrame[];
 
   constructor() {
     this.structures = [];
+    this.floating = [];
     this.pending = [];
   }
 
@@ -27,6 +32,19 @@ export class CoreBoard {
     if (index === -1) return;
 
     this.structures.splice(index, 1);
+  }
+
+  float(node: CoreNode) {
+    if (this.floating.includes(node)) return;
+
+    this.floating.push(node);
+  }
+
+  unfloat(node: CoreNode) {
+    const index = this.floating.indexOf(node);
+    if (index === -1) return;
+
+    this.floating.splice(index, 1);
   }
 
   // Captures which structures are on the board and what each holds, and
@@ -56,7 +74,9 @@ export class CoreBoard {
         structure.restore(data);
       }
 
-      // Frames pushed by the undone work show a board that no longer exists.
+      // A run whose generator throws can leave a value in flight, and frames
+      // pushed by the undone work show a board that no longer exists.
+      this.floating = [];
       this.pending = [];
     };
   }
@@ -65,6 +85,10 @@ export class CoreBoard {
     const frame = createCanvasFrame();
 
     for (const structure of this.structures) structure.serialize(frame);
+
+    // A floating node's labels, if it had any, would join the frame's labels.
+    for (const node of this.floating)
+      node.serialize({ ...frame, nodes: frame.floating });
 
     return frame;
   }

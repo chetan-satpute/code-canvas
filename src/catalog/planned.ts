@@ -31,13 +31,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
       'Halves a sorted array on every step, discarding the side that cannot hold the target.',
   },
   {
-    id: 'array-merge-sort',
-    structureId: 'array',
-    title: 'Merge Sort',
-    description:
-      'Splits the array down to single elements, then merges the halves back together in order.',
-  },
-  {
     id: 'array-quick-sort',
     structureId: 'array',
     title: 'Quick Sort',

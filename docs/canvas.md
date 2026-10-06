@@ -10,8 +10,9 @@ mirror each other on purpose.
 mutable elements              plain frame                  React
 src/engine/elements/   ──▶    src/canvas/frame.ts   ──▶    CanvasCard
 CoreNode, CoreEdge,           CanvasFrame {                  useCanvasFrames
-CoreLabel                       nodes, edges, labels         (one frame per
-  .serialize(frame)           }                               animation frame)
+CoreLabel                       nodes, edges, labels,        (one frame per
+  .serialize(frame)             floating                      animation frame)
+                              }
 ```
 
 - **`src/engine/elements/`** holds the objects an algorithm changes:
@@ -54,11 +55,17 @@ A label occupies a node-sized cell and centers its text in it, so a label
 placed beside a node lines up with that node's column or row without anyone
 measuring text.
 
-A frame is drawn edges first, then nodes, then labels. An edge never reaches
-its own nodes, since both ends stop at the gap, so the order is not what
-keeps it off them. It matters for a node passing over an edge it is not part
-of, such as a value in flight crossing a tree, which should cover the line;
-labels go last so an annotation is never hidden.
+A frame is drawn edges first, then nodes, then labels, then floating nodes.
+An edge never reaches its own nodes, since both ends stop at the gap, so the
+order is not what keeps it off them. It matters for a node passing over an
+edge it is not part of, such as a value in flight crossing a tree, which
+should cover the line. Labels go after nodes so an annotation is never hidden
+by what it annotates.
+
+`floating` holds values in flight that belong to no structure, such as the
+copy an assignment carries from one array to another. They are drawn over
+everything, labels included: a copy covers a label only while passing it,
+and an annotation drawn over a moving value would garble both.
 
 ## Colors and font
 

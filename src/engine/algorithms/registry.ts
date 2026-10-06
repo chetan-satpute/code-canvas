@@ -1,5 +1,6 @@
 import type { AlgorithmRunner } from '../algorithm.ts';
 import { arrayLinearSearch } from './array-linear-search.ts';
+import { arrayMergeSort } from './array-merge-sort.ts';
 import { binarySearchTreeInsert } from './binary-search-tree-insert.ts';
 import { linkedListInsertHead } from './linked-list-insert-head.ts';
 import { maxHeapPush } from './max-heap-push.ts';
@@ -8,6 +9,7 @@ import { maxHeapPush } from './max-heap-push.ts';
 // is one the explore page cannot show, the same as one without a listing.
 const runners: Record<string, AlgorithmRunner> = {
   'array-linear-search': arrayLinearSearch,
+  'array-merge-sort': arrayMergeSort,
   'linked-list-insert-head': linkedListInsertHead,
   'binary-search-tree-insert': binarySearchTreeInsert,
   'max-heap-push': maxHeapPush,

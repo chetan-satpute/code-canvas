@@ -23,15 +23,20 @@ export interface CanvasFrame {
   nodes: CanvasNode[];
   edges: CanvasEdge[];
   labels: CanvasLabel[];
+  // Values in flight that belong to no structure, such as a copy on its way
+  // to the cell it is assigned to.
+  floating: CanvasNode[];
 }
 
 export function createCanvasFrame(): CanvasFrame {
-  return { nodes: [], edges: [], labels: [] };
+  return { nodes: [], edges: [], labels: [], floating: [] };
 }
 
 // Edges never reach their own nodes (see edge.ts), but a node can pass over
 // an edge it is not part of — a value in flight crossing a tree — and should
-// cover it. Labels go on top so an annotation is never hidden.
+// cover it. Labels go on top so an annotation is never hidden by what it
+// annotates. A floating value goes over everything: it covers a label only
+// while passing it.
 export function drawCanvasFrame(
   ctx: CanvasRenderingContext2D,
   frame: CanvasFrame,
@@ -40,6 +45,7 @@ export function drawCanvasFrame(
   for (const edge of frame.edges) drawCanvasEdge(ctx, edge, theme);
   for (const node of frame.nodes) drawCanvasNode(ctx, node, theme);
   for (const label of frame.labels) drawCanvasLabel(ctx, label, theme);
+  for (const node of frame.floating) drawCanvasNode(ctx, node, theme);
 }
 
 // The extent of the drawing, in CSS pixels, before the margin is added.
@@ -54,9 +60,11 @@ export function frameBounds(frame: CanvasFrame): CanvasSize {
   let width = 0;
   let height = 0;
 
-  for (const node of frame.nodes) {
-    width = Math.max(width, node.x + NODE_WIDTH);
-    height = Math.max(height, node.y + NODE_HEIGHT);
+  for (const nodes of [frame.nodes, frame.floating]) {
+    for (const node of nodes) {
+      width = Math.max(width, node.x + NODE_WIDTH);
+      height = Math.max(height, node.y + NODE_HEIGHT);
+    }
   }
 
   for (const label of frame.labels) {

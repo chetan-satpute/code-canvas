@@ -20,6 +20,14 @@ const algorithms: Record<string, Algorithm> = {
       'Walks the array from the front, comparing every element until the target turns up or the end is reached.',
     args: [{ name: 'target', placeholder: 'e.g. 42' }],
   },
+  'array-merge-sort': {
+    id: 'array-merge-sort',
+    structureId: 'array',
+    title: 'Merge Sort',
+    description:
+      'Splits the array down to single elements, then merges the halves back together in order.',
+    args: [],
+  },
   'linked-list-insert-head': {
     id: 'linked-list-insert-head',
     structureId: 'linked-list',
