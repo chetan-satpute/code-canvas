@@ -23,11 +23,13 @@ src/engine/
   call.ts              CoreCall: one call's signature and memory
   step.ts              CoreStep: what the reader is shown at one point
   pointers.ts          CorePointers: node variables drawn under their node
+  cursors.ts           CoreCursors: index variables drawn under their cell
   algorithms/
     registry.ts        algorithm id → AlgorithmRunner
     array-linear-search.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
+    max-heap-push.ts
   structures/
     registry.ts        StructureId → { create, operations }
     array/
@@ -42,6 +44,11 @@ src/engine/
       structure.ts     CoreBinarySearchTree and its nodes, root and pointers
       operations.ts    randomize, insert, remove
       algorithm.ts     defineBinarySearchTreeAlgorithm
+    max-heap/
+      structure.ts     CoreMaxHeap: its array row, its tree and cursors
+      operations.ts    randomize, push, pop
+      swap.ts          animateSwap: two values trading slots
+      algorithm.ts     defineMaxHeapAlgorithm
   testing/
     trace.ts           traceRun: plays a run to the end for a test
 ```
@@ -56,8 +63,8 @@ its first node keep the frame's coordinates at 0 or more.
 Every structure provides:
 
 - `toData()` and `restore(data)`: conversion to and from its plain form
-  (`number[]` for all three: an array in order, a linked list head first, and
-  a binary search tree in preorder).
+  (`number[]` for all four: an array in order, a linked list head first, a
+  binary search tree in preorder, and a max heap as the array it is kept in).
   `restore` replaces the contents in place, so the board keeps pointing at
   the same object.
 - `rearrange()`: recomputes every position it owns from its own.
@@ -240,6 +247,49 @@ Every operation is instant:
   removes the successor's node instead. A value the tree does not hold
   changes nothing.
 
+## The max heap
+
+`CoreMaxHeap` is an array kept in heap order, named `heap`, and drawn twice:
+the array the listings index, and below it the complete binary tree that
+array represents, where the children of slot `i` are slots `2i + 1` and
+`2i + 2`. Slot `i` is `cells[i]` in the row and `nodes[i]` in the tree, and
+`links[i]` is the edge into `nodes[i]` from its parent's node (none into the
+root). Its plain form is the array itself, so `restore` takes the values in
+the order given and assumes they are already in heap order.
+
+The row is laid out as the array's is, cells flush, one `NODE_WIDTH` apart.
+The tree uses the binary search tree's layout (`treeLayout()`): each node the
+next column in order, levels two rows apart. Its root is `TREE_OFFSET`, four
+rows, under the row: the two rows under the array are the lanes a swap moves
+its cells in, the first also holding the cursors, and one more keeps the far
+lane off the root.
+
+A slot's index above it and its cursors under it belong to the slot, not to
+the value in it. They are derived from the slot when the heap serializes, at
+its cell's opacity, and left out while the cell is away from its slot, since
+a cell leaving the slot passes through the rows they are drawn in. Cursors
+(`heap.setCursor('index', i)`) are kept in a `CoreCursors` (`cursors.ts`),
+which the array shares, and are drawn under the row only: an index names an
+array slot, and the row under a tree node is where its links leave, which a
+label as long as `parent` would clip.
+
+`setVariant(i, variant)` colors a slot in both views at once, so the two
+cannot tell different stories. `swap(a, b)` exchanges the two cells between
+slots, while the tree's two nodes stay where they stand and trade their
+values and variants. A tree node is held in place by its links, and moving it
+drags them out of shape, which reads as the tree coming apart rather than as
+two values swapping.
+
+Every operation is instant:
+
+- **Randomize** replaces the contents with 5–7 random values, put in heap
+  order by sifting each parent down, deepest first. Every tree node has its
+  own column, so seven draw 480px wide. Values may repeat: no operation names
+  a slot by its value.
+- **Push** appends the value and sifts it up past every smaller parent.
+- **Pop** moves the last value into the root and sifts it down past its
+  larger child. Popping an empty heap does nothing.
+
 ## Runs
 
 A run steps an algorithm against its listing. The listing's line markers
@@ -318,7 +368,9 @@ as an index, not on a node, because an index can point past the last cell:
 the loop check that ends a linear search has `i === array.length`, and its
 cursor sits under the empty cell after the array. Cursors on the same cell
 share one label (`i j`). The label's position comes from the index when the
-array serializes, and `restore` clears every cursor.
+array serializes, and `restore` clears every cursor. The array and the max
+heap keep them in a `CoreCursors` (`cursors.ts`), and each says where a cell
+is drawn when it serializes.
 
 ### Linear Search
 
@@ -386,6 +438,46 @@ drawn. A link to a child in the next column leaves the node at 45°, and where
 it crosses the top of the label's text it is about 25px to the side of the
 label's center. A seven-letter name reaches about 28px either side, so the
 link clips it; a four-letter name reaches about 16px and clears it.
+
+### Push
+
+| Step      | Canvas                                                                                  | Memory               |
+| --------- | --------------------------------------------------------------------------------------- | -------------------- |
+| `enter`   | unchanged                                                                               | value                |
+| `append`  | the tree opens a column, then the new cell, node and link fade in, `secondary`          | value                |
+| `start`   | cursor `index` under the new cell                                                       | value, index         |
+| `loop`    | `parent` gone after a climb; at the root, the value `success`                           | value, index         |
+| `parent`  | cursor `parent` under the parent's cell                                                 | value, index, parent |
+| `compare` | the parent `tertiary`                                                                   | value, index, parent |
+| `stop`    | the value `success`, the parent back to `primary`                                       | value, index, parent |
+| `swap`    | the two cells pass under the row into each other's slots; the tree's nodes trade values | value, index, parent |
+| `climb`   | the lower slot back to `primary`, `index` moves up to share the label with `parent`     | value, index, parent |
+| `exit`    | colors reset, cursors gone                                                              | value                |
+
+The listing takes the heap as `number[]`, but the signature names it bare
+(`push(heap, value: 42)`): the array changes as the run goes, so a copy
+printed at the call would be stale by the first swap, and the canvas shows it
+as it stands. `parent` is declared in the loop body, so it leaves memory and
+the canvas before the condition is tested again.
+A value that reaches the root is marked `success` on the `loop` step that
+finds `index` at 0, the same outcome `stop` marks for a value a parent
+holds back.
+
+`heap.push(value)` makes a new last slot, which is a leaf of the tree. As in
+the binary search tree's Insert Value, every tree node has a column of its
+own, so before anything appears the tree slides to the layout it will have
+with the leaf, which moves the nodes after the leaf in order one column
+along. The cell, the node and its link then fade in together. The pushed
+value is `secondary` from there on, and its colors travel with it through
+every swap, so the reader can follow it up the heap.
+
+A swap (`animateSwap` in `swap.ts`) moves the two cells out of the row, along
+and back in, since along the row each would pass through every cell between.
+They go under it, one lane each, because the row above holds every slot's
+index and a label is drawn over a node; the climbing value takes the near
+lane. Only once the cells have landed do the tree's two nodes trade their
+values, in place, in one frame. When the step ends, every cell and node is
+where `rearrange()` would put it.
 
 ### Adding an algorithm
 

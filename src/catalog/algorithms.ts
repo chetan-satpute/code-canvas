@@ -36,6 +36,14 @@ const algorithms: Record<string, Algorithm> = {
       'Descends left or right by comparing against each node, and hangs the new node off the first empty slot.',
     args: [{ name: 'value', placeholder: 'e.g. 42' }],
   },
+  'max-heap-push': {
+    id: 'max-heap-push',
+    structureId: 'max-heap',
+    title: 'Push',
+    description:
+      'Appends the value at the end, then swaps it upwards past any smaller parent until the heap order holds.',
+    args: [{ name: 'value', placeholder: 'e.g. 42' }],
+  },
 };
 
 // `Object.hasOwn` keeps ids such as `constructor` from resolving to

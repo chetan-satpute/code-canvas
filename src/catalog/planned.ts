@@ -4,7 +4,8 @@ import type { StructureId } from './structures.ts';
 // algorithm moves to `algorithms.ts`, and a structure to `structures.ts`, in
 // the change that makes it run, and leaves this file in the same change.
 
-export type PlannedStructureId = 'max-heap';
+// Empty for now: every structure planned so far runs.
+export type PlannedStructureId = never;
 
 export interface PlannedStructure {
   id: PlannedStructureId;
@@ -19,14 +20,7 @@ export interface PlannedAlgorithm {
   description: string;
 }
 
-export const plannedStructures: PlannedStructure[] = [
-  {
-    id: 'max-heap',
-    title: 'Max Heap',
-    description:
-      'A complete binary tree where every node is greater than or equal to its children, so the maximum sits at the root.',
-  },
-];
+export const plannedStructures: PlannedStructure[] = [];
 
 export const plannedAlgorithms: PlannedAlgorithm[] = [
   {
@@ -84,13 +78,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
     title: 'Remove Value',
     description:
       'Unlinks a leaf, lifts a lone child into place, or — for a node with two children — replaces it with its inorder successor.',
-  },
-  {
-    id: 'max-heap-push',
-    structureId: 'max-heap',
-    title: 'Push',
-    description:
-      'Appends the value at the end, then swaps it upwards past any smaller parent until the heap order holds.',
   },
   {
     id: 'max-heap-pop',

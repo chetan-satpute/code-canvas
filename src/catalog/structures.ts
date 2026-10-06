@@ -1,6 +1,7 @@
 import type { StructureOperation } from './types.ts';
 
-export type StructureId = 'array' | 'linked-list' | 'binary-search-tree';
+export type StructureId =
+  'array' | 'linked-list' | 'binary-search-tree' | 'max-heap';
 
 export interface Structure {
   id: StructureId;
@@ -77,6 +78,21 @@ const structures: Record<StructureId, Structure> = {
         label: 'Remove',
         args: [{ name: 'value', placeholder: 'e.g. 13' }],
       },
+    ],
+  },
+  'max-heap': {
+    id: 'max-heap',
+    title: 'Max Heap',
+    description:
+      'A complete binary tree where every node is greater than or equal to its children, so the maximum sits at the root.',
+    operations: [
+      { id: 'randomize', label: 'Randomize', args: [] },
+      {
+        id: 'push',
+        label: 'Push',
+        args: [{ name: 'value', placeholder: 'e.g. 42' }],
+      },
+      { id: 'pop', label: 'Pop', args: [] },
     ],
   },
 };

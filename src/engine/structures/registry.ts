@@ -14,6 +14,11 @@ import {
   randomLinkedListValues,
 } from './linked-list/operations.ts';
 import { CoreLinkedList } from './linked-list/structure.ts';
+import {
+  maxHeapOperations,
+  randomMaxHeapValues,
+} from './max-heap/operations.ts';
+import { CoreMaxHeap } from './max-heap/structure.ts';
 
 interface StructureEngine {
   create: () => CoreStructure;
@@ -54,6 +59,15 @@ const engines: Record<StructureId, StructureEngine> = {
       return tree;
     },
     operations: binarySearchTreeOperations,
+  },
+  'max-heap': {
+    create: () => {
+      const heap = new CoreMaxHeap(randomMaxHeapValues());
+      heap.name = 'heap';
+
+      return heap;
+    },
+    operations: maxHeapOperations,
   },
 };
 
