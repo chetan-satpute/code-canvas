@@ -31,13 +31,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
       'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
   },
   {
-    id: 'linked-list-remove',
-    structureId: 'linked-list',
-    title: 'Remove',
-    description:
-      'Keeps a reference to the previous node while scanning, so the match can be unlinked by pointing past it.',
-  },
-  {
     id: 'max-heap-pop',
     structureId: 'max-heap',
     title: 'Pop',

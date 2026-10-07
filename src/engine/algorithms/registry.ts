@@ -8,6 +8,7 @@ import { binarySearchTreeInsert } from './binary-search-tree-insert.ts';
 import { binarySearchTreeRemove } from './binary-search-tree-remove.ts';
 import { linkedListInsertAfter } from './linked-list-insert-after.ts';
 import { linkedListInsertHead } from './linked-list-insert-head.ts';
+import { linkedListRemove } from './linked-list-remove.ts';
 import { maxHeapPush } from './max-heap-push.ts';
 
 // Keyed by the catalog's algorithm ids. An algorithm listed without a runner
@@ -20,6 +21,7 @@ const runners: Record<string, AlgorithmRunner> = {
   'array-remove-value': arrayRemoveValue,
   'linked-list-insert-head': linkedListInsertHead,
   'linked-list-insert-after': linkedListInsertAfter,
+  'linked-list-remove': linkedListRemove,
   'binary-search-tree-insert': binarySearchTreeInsert,
   'binary-search-tree-remove': binarySearchTreeRemove,
   'max-heap-push': maxHeapPush,

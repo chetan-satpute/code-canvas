@@ -33,6 +33,7 @@ src/engine/
     array-remove-value.ts
     linked-list-insert-head.ts
     linked-list-insert-after.ts
+    linked-list-remove.ts
     binary-search-tree-insert.ts
     binary-search-tree-remove.ts
     max-heap-push.ts
@@ -470,6 +471,38 @@ does the node join the row: the successor and every node after it slide one
 place along, then the node rises into the gap. Rising at once, it would pass
 into the successor still standing in its slot. When the step ends, every node
 is where `rearrange()` would put it.
+
+### Remove
+
+| Step                 | Canvas                                                                                | Memory |
+| -------------------- | ------------------------------------------------------------------------------------- | ------ |
+| `enter`              | unchanged                                                                             | target |
+| `start`              | pointer `node` under the head; none on an empty list                                  | target |
+| `noPrevious`         | unchanged                                                                             | target |
+| `search`             | `node` `secondary`                                                                    | target |
+| `setPrevious`        | pointer `previous` joins `node`                                                       | target |
+| `advance`            | `node` back to `primary`, and the pointer moves to the next node, or goes at `null`   | target |
+| `missingCheck`       | unchanged                                                                             | target |
+| `missing`            | unchanged                                                                             | target |
+| `headCheck`          | `node` `danger`                                                                       | target |
+| `setHead`, `setNext` | the node fades out with its links, the new link fades in, and the list closes the gap | target |
+| `exit`               | colors reset, pointers gone                                                           | target |
+
+The scan stops at the first node holding the target, the one the structure
+card's Remove uses too, with `previous` one node behind it. `previous` starts
+as `null`, so it appears only at its first assignment, and it is still `null`
+when the target is the head, which is what `headCheck` tests.
+
+`previous.next = node.next` unlinks the node, but the run still holds it in
+`node` until it returns. As in the binary search tree's Remove Value, it fades
+out at the assignment all the same, together with every link touching it,
+while they are still drawn where they were: the new link from `previous` spans
+the node's slot, so a node left standing there would have the link drawn
+through it. Then the new link fades in, none when the tail is removed, and the
+nodes after the removed one slide back a place. `list.head = node.next` is the
+same with `head` in place of the link: `head` is drawn at its node's opacity,
+so it fades with the old head and reappears over the successor. When the step
+ends, every node is where `rearrange()` would put it.
 
 ### Insert Value
 

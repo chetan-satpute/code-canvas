@@ -74,6 +74,14 @@ const algorithms: Record<string, Algorithm> = {
       { name: 'value', placeholder: 'e.g. 42' },
     ],
   },
+  'linked-list-remove': {
+    id: 'linked-list-remove',
+    structureId: 'linked-list',
+    title: 'Remove',
+    description:
+      'Keeps a reference to the previous node while scanning, so the match can be unlinked by pointing past it.',
+    args: [{ name: 'target', placeholder: 'e.g. 13' }],
+  },
   'binary-search-tree-insert': {
     id: 'binary-search-tree-insert',
     structureId: 'binary-search-tree',
