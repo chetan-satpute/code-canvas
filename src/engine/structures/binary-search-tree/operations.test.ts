@@ -5,7 +5,8 @@ import { NODE_WIDTH } from '#canvas/elements/node.ts';
 import { binarySearchTreeOperations } from './operations.ts';
 import { CoreBinarySearchTree, LEVEL_SPACING } from './structure.ts';
 
-// 50 at the root; 30 with 20 and 40 on its left; 70 with 60 on its right.
+// 50 at the root; 30 on its left, with 20 and 40 under it; 70 on its right,
+// with 60 on its left.
 const TREE = [50, 30, 20, 40, 70, 60];
 
 function apply(id: string, args: Record<string, number> = {}) {

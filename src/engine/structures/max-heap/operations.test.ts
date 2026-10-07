@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import { NODE_WIDTH } from '#canvas/elements/node.ts';
 
+import { seedRandom } from '../../testing/random.ts';
 import { maxHeapOperations, randomMaxHeapValues } from './operations.ts';
 import {
   CoreMaxHeap,
@@ -99,6 +100,8 @@ describe('max heap', () => {
   });
 
   test('randomizes into heap order', () => {
+    seedRandom(42);
+
     for (let run = 0; run < 50; run++)
       expect(isMaxHeap(randomMaxHeapValues())).toBe(true);
   });

@@ -135,6 +135,31 @@ const cases = [
     ],
   },
   {
+    name: 'two elements, the target second',
+    values: [3, 8],
+    target: 8,
+    anchors: [...start, ...probe, 'less', 'right', ...probe, 'found', 'exit'],
+  },
+  {
+    name: 'two elements, the target below both',
+    values: [3, 8],
+    target: 1,
+    anchors: [
+      ...start,
+      ...[...probe, 'less', 'left', 'loop', 'missing', 'exit'],
+    ],
+  },
+  {
+    name: 'two elements, the target above both',
+    values: [3, 8],
+    target: 9,
+    anchors: [
+      ...start,
+      ...[...probe, 'less', 'right', ...probe, 'less', 'right'],
+      ...['loop', 'missing', 'exit'],
+    ],
+  },
+  {
     name: 'a target that appears several times',
     values: [4, 4, 4, 4],
     target: 4,
@@ -180,6 +205,13 @@ describe('array binary search', () => {
       { target: '34', low: '0', high: '6', mid: '3' },
       { target: '34', low: '4', high: '6', mid: '5' },
     ]);
+  });
+
+  test('rounds the middle down on an even range', () => {
+    const { trace } = search([2, 5, 8, 13, 21, 34], 34);
+    const mids = trace.filter((step) => step.anchor === 'mid');
+
+    expect(mids.map((step) => step.memory.mid)).toEqual(['2', '4', '5']);
   });
 
   test('shares one label between cursors on the same cell', () => {

@@ -26,6 +26,10 @@ function sort(values: number[]) {
         values: structure.toData(),
       })),
       labels: frame.labels.map((label) => label.text),
+      // Every value drawn in a color of its own, across all the arrays.
+      marked: frame.nodes
+        .filter((node) => node.variant !== 'primary')
+        .map((node) => [node.value, node.variant]),
       floating: frame.floating.length,
     };
   });
@@ -73,6 +77,32 @@ describe('array merge sort', () => {
       'merge',
       'exit',
     ]);
+  });
+
+  test('takes from the left when it is smaller or equal, then drains the right', () => {
+    const merge = (values: number[]) => {
+      const steps = anchors(values);
+
+      return steps.slice(steps.indexOf('compare'), steps.indexOf('mergeExit'));
+    };
+
+    const expected = [
+      'compare',
+      'takeLeft',
+      'nextLeft',
+      'nextSlot',
+      'loop',
+      'drainLeft',
+      'drainRight',
+      'drainRightTake',
+      'drainRightNext',
+      'drainRightSlot',
+      'drainRight',
+    ];
+
+    expect(merge([1, 2])).toEqual(expected);
+    // `<=`, so a tie goes to the left half too.
+    expect(merge([2, 2])).toEqual(expected);
   });
 
   test('returns at once from an array too short to split', () => {
@@ -127,6 +157,37 @@ describe('array merge sort', () => {
     expect(trace[inner].state.labels).not.toContain('mid');
   });
 
+  test('marks a call too short to split as sorted', () => {
+    const { trace } = sort([3, 1]);
+    const sorted = trace.find((step) => step.anchor === 'sorted')!;
+
+    expect(sorted.state.marked).toEqual([[3, 'success']]);
+  });
+
+  test('marks the two values compared', () => {
+    const { trace } = sort([3, 1]);
+    const compare = trace.find((step) => step.anchor === 'compare')!;
+
+    expect(compare.state.marked).toEqual([
+      [3, 'secondary'],
+      [1, 'secondary'],
+    ]);
+  });
+
+  test('names each array at most once, however deep the run', () => {
+    const { trace } = sort([4, 3, 2, 1]);
+
+    expect(Math.max(...trace.map((step) => step.depth))).toBe(3);
+
+    for (const step of trace) {
+      const names = step.state.arrays
+        .map((array) => array.name)
+        .filter((name) => name !== undefined);
+
+      expect(new Set(names).size).toBe(names.length);
+    }
+  });
+
   test('lands every copy before the step is shown', () => {
     for (const step of sort([5, 3, 8, 1]).trace)
       expect(step.state.floating).toBe(0);
@@ -155,6 +216,23 @@ describe('array merge sort', () => {
     expect(step.callStack.map((call) => call.signature)).toEqual([
       'merge(array: [1, 3], left: [3], right: [1])',
       'mergeSort(array: [1, 3])',
+    ]);
+  });
+
+  test('updates only the signature of the call whose array is written', () => {
+    const board = new CoreBoard();
+    const array = new CoreArray([4, 3, 2, 1]);
+    board.add(array);
+
+    const run = arrayMergeSort(board, array, listing.anchors, {});
+    let step = run.next().value;
+
+    while (listing.anchors.mergeExit !== step.line) step = run.next().value;
+
+    expect(step.callStack.map((call) => call.signature)).toEqual([
+      'merge(array: [3, 4], left: [4], right: [3])',
+      'mergeSort(array: [3, 4])',
+      'mergeSort(array: [4, 3, 2, 1])',
     ]);
   });
 });

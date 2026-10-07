@@ -1,9 +1,11 @@
 import { describe, expect, test } from 'vitest';
 
 import listing from '#catalog/listings/array-quick-sort.md?highlight';
+import { randomNumber } from '#utils/random.ts';
 
 import { CoreBoard } from '../board.ts';
 import { CoreArray } from '../structures/array/structure.ts';
+import { seedRandom } from '../testing/random.ts';
 import { traceRun } from '../testing/trace.ts';
 import { arrayQuickSort } from './array-quick-sort.ts';
 
@@ -80,6 +82,19 @@ describe('array quick sort', () => {
     ]);
   });
 
+  test('swaps a value equal to the pivot left, as `<=` says', () => {
+    expect(anchors([2, 2]).slice(4, 12)).toEqual([
+      'pivot',
+      'start',
+      'loop',
+      'compare',
+      'swap',
+      'next',
+      'loop',
+      'placePivot',
+    ]);
+  });
+
   test('returns at once from an array too short to partition', () => {
     expect(anchors([])).toEqual(['enter', 'base', 'sorted', 'exit']);
     expect(anchors([7])).toEqual(['enter', 'base', 'sorted', 'exit']);
@@ -98,15 +113,13 @@ describe('array quick sort', () => {
   });
 
   test('sorts random arrays', () => {
-    // Seeded, so a failure reproduces.
-    let seed = 42;
-    const random = (below: number) => {
-      seed = (seed * 16807) % (2 ** 31 - 1);
-      return seed % below;
-    };
+    seedRandom(42);
 
+    // Values from a narrow range, so most arrays repeat some.
     for (let run = 0; run < 50; run++) {
-      const values = Array.from({ length: random(11) }, () => random(20));
+      const values = Array.from({ length: randomNumber(0, 10) }, () =>
+        randomNumber(0, 19),
+      );
 
       expect(sort(values).array.toData()).toEqual(sorted(values));
     }

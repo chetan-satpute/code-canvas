@@ -32,6 +32,11 @@ function remove(values: number[], value: number) {
       labels: frame.labels.filter(
         (label) => label.opacity > 0 && label.text !== 'tree',
       ),
+      // Faded out or not: a node still drawn is one something still holds.
+      held: frame.nodes.length,
+      marked: frame.nodes
+        .filter((node) => node.opacity > 0 && node.variant !== 'primary')
+        .map((node) => [node.value, node.variant]),
     };
   });
 
@@ -309,6 +314,7 @@ describe('binary search tree remove', () => {
       expect(exit.state.labels.map((label) => label.text)).toEqual(
         tree.root === null ? [] : ['root'],
       );
+      expect(exit.state.held).toBe(tree.toData().length);
       expect(tree.preorder().every((node) => node.variant === 'primary')).toBe(
         true,
       );
@@ -340,6 +346,38 @@ describe('binary search tree remove', () => {
     expect(copy.state.values).toEqual([60, 30, 80, 60, 70, 90]);
     expect(copy.state.drawn.filter((drawn) => drawn === 60)).toHaveLength(2);
   });
+
+  test('marks each candidate for the successor as the walk goes left', () => {
+    const { trace } = remove([50, 30, 80, 60, 55, 90], 50);
+    const walk = trace
+      .filter((step) => ['minStart', 'minGoLeft'].includes(step.anchor))
+      .map((step) =>
+        step.state.marked.filter(([, variant]) => variant === 'tertiary'),
+      );
+
+    expect(walk).toEqual([
+      [[80, 'tertiary']],
+      [[60, 'tertiary']],
+      [[55, 'tertiary']],
+    ]);
+  });
+
+  // With two children, the node unlinked is the successor's, not the one
+  // that held the value.
+  test.each([
+    { values: [50, 30, 70], value: 70, unlinked: 70 },
+    { values: [50, 30, 80, 60, 70, 90], value: 50, unlinked: 60 },
+  ])(
+    'marks the node about to be unlinked removing $value from $values',
+    ({ values, value, unlinked }) => {
+      const { trace } = remove(values, value);
+      const child = trace.find((step) => step.anchor === 'child')!;
+
+      expect(
+        child.state.marked.filter(([, variant]) => variant === 'danger'),
+      ).toEqual([[unlinked, 'danger']]);
+    },
+  );
 
   test('stacks pointers that share a node', () => {
     const { trace } = remove([50, 30, 70], 30);

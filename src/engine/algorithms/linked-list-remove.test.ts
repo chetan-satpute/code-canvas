@@ -4,7 +4,10 @@ import listing from '#catalog/listings/linked-list-remove.md?highlight';
 
 import { CoreBoard } from '../board.ts';
 import { linkedListOperations } from '../structures/linked-list/operations.ts';
-import { CoreLinkedList } from '../structures/linked-list/structure.ts';
+import {
+  CoreLinkedList,
+  LINK_SPACING,
+} from '../structures/linked-list/structure.ts';
 import { traceRun } from '../testing/trace.ts';
 import { linkedListRemove } from './linked-list-remove.ts';
 
@@ -32,6 +35,9 @@ function remove(values: number[], target: number) {
       labels: frame.labels
         .filter((label) => label.opacity > 0 && label.text !== 'list')
         .map((label) => label.text),
+      marked: frame.nodes
+        .filter((node) => node.opacity > 0 && node.variant !== 'primary')
+        .map((node) => [node.value, node.variant]),
     };
   });
 
@@ -70,6 +76,12 @@ const cases = [
     anchors: [...START, ...ADVANCE, ...ADVANCE, ...FOUND, 'setNext', 'exit'],
   },
   {
+    name: 'the tail of two',
+    values: [8, 3],
+    target: 3,
+    anchors: [...START, ...ADVANCE, ...FOUND, 'setNext', 'exit'],
+  },
+  {
     name: 'the only node',
     values: [8],
     target: 8,
@@ -96,6 +108,24 @@ describe('remove', () => {
 
       for (const step of trace.filter((step) => step.anchor === 'advance'))
         expect(step.state.labels).toEqual(['head', 'previous', 'node']);
+    });
+
+    test('compares each node the scan reaches', () => {
+      const { trace } = remove(values, target);
+      const searched = trace
+        .filter((step) => step.anchor === 'search')
+        .map((step) => step.state.marked);
+
+      const reached = values.slice(0, values.indexOf(target) + 1);
+
+      expect(searched).toEqual(reached.map((value) => [[value, 'secondary']]));
+    });
+
+    test('marks the node found for removal', () => {
+      const { trace } = remove(values, target);
+      const headCheck = trace.find((step) => step.anchor === 'headCheck')!;
+
+      expect(headCheck.state.marked).toEqual([[target, 'danger']]);
     });
 
     test('takes the node out at the unlink', () => {
@@ -173,6 +203,33 @@ describe('remove', () => {
     expect(exit.state.drawn).toEqual(values);
     expect(exit.state.labels).toEqual(values.length === 0 ? [] : ['head']);
     expect(list.nodes().every((node) => node.variant === 'primary')).toBe(true);
+  });
+
+  test('leaves `previous` on the tail once `node` runs off the end', () => {
+    const { trace } = remove([8, 3, 21], 5);
+    const advance = trace.findLast((step) => step.anchor === 'advance')!;
+
+    expect(advance.state.labels).toEqual(['head', 'previous']);
+  });
+
+  test('slides the rest of the list back rather than jumping', () => {
+    const board = new CoreBoard();
+    const list = new CoreLinkedList([8, 3, 21]);
+    board.add(list);
+
+    const run = linkedListRemove(board, list, listing.anchors, { target: 3 });
+    let step = run.next().value;
+
+    while (listing.anchors.setNext !== step.line) step = run.next().value;
+
+    const from = list.x + 2 * LINK_SPACING;
+    const to = list.x + LINK_SPACING;
+    const xs = step.frames.map(
+      (frame) => frame.nodes.find((node) => node.value === 21)!.x,
+    );
+
+    expect(xs.at(-1)).toBe(to);
+    expect(xs.some((x) => x > to && x < from)).toBe(true);
   });
 
   test('names the list bare in the signature', () => {

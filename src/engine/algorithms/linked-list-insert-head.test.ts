@@ -25,6 +25,9 @@ function insertHead(values: number[], value: number) {
       drawn: frame.nodes.map((node) => node.value),
       edges: frame.edges.length,
       labels: frame.labels.map((label) => label.text),
+      secondary: frame.nodes
+        .filter((node) => node.variant === 'secondary')
+        .map((node) => node.value),
     };
   });
 
@@ -58,6 +61,7 @@ describe('insert at head', () => {
       expect(create.state.values).toEqual(values);
       expect(create.state.drawn).toContain(42);
       expect(create.state.labels).toContain('node');
+      expect(create.state.secondary).toEqual([42]);
       expect(link.state.values).toEqual(values);
     });
 

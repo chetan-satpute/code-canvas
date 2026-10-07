@@ -8,6 +8,7 @@ import {
   randomMaxHeapValues,
 } from '../structures/max-heap/operations.ts';
 import { CoreMaxHeap, parentOf } from '../structures/max-heap/structure.ts';
+import { seedRandom } from '../testing/random.ts';
 import { traceRun } from '../testing/trace.ts';
 import { maxHeapPop } from './max-heap-pop.ts';
 
@@ -307,6 +308,17 @@ describe('max heap pop', () => {
     expect(pick([50, 40, 30])).toEqual(['secondary', 'primary']);
   });
 
+  test('drops the smaller child from the comparison', () => {
+    const { trace } = pop([50, 40, 30, 35]);
+    const compare = trace.find((step) => step.anchor === 'compare')!;
+
+    expect(compare.state.variants).toEqual([
+      'secondary',
+      'tertiary',
+      'primary',
+    ]);
+  });
+
   test('moves `child` to the right child when it is larger', () => {
     const { trace } = pop([50, 30, 40, 10]);
     const right = trace.findIndex((step) => step.anchor === 'right');
@@ -369,6 +381,8 @@ describe('max heap pop', () => {
   });
 
   test('takes the maximum off random heaps and keeps them in order', () => {
+    seedRandom(42);
+
     for (let round = 0; round < 50; round++) {
       const values = randomMaxHeapValues();
       const { trace, heap } = pop(values);
