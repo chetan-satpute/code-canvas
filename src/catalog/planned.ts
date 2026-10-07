@@ -30,11 +30,4 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
     description:
       'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
   },
-  {
-    id: 'max-heap-pop',
-    structureId: 'max-heap',
-    title: 'Pop',
-    description:
-      'Moves the last value to the root and removes the old maximum, then sinks the root past its larger child.',
-  },
 ];

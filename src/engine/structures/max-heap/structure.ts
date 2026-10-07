@@ -84,6 +84,20 @@ export class CoreMaxHeap extends CoreStructure<number[]> {
     );
   }
 
+  // `heap.pop()`: the last slot, a leaf of the tree, goes with its link. Not
+  // laid out, so a run can fade it out first and then close its column.
+  removeLast() {
+    this.cells.pop();
+    this.nodes.pop();
+    this.links.pop();
+  }
+
+  // `heap[index] = value`. Both views take the value where they stand.
+  setValue(index: number, value: number) {
+    this.cells[index].value = value;
+    this.nodes[index].value = value;
+  }
+
   // `[heap[a], heap[b]] = [heap[b], heap[a]]`. The cells change slots, since
   // nothing is attached to them. The tree's two nodes are held in place by
   // their links, so they trade their values where they stand instead: moving

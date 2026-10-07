@@ -106,6 +106,14 @@ const algorithms: Record<string, Algorithm> = {
       'Appends the value at the end, then swaps it upwards past any smaller parent until the heap order holds.',
     args: [{ name: 'value', placeholder: 'e.g. 42' }],
   },
+  'max-heap-pop': {
+    id: 'max-heap-pop',
+    structureId: 'max-heap',
+    title: 'Pop',
+    description:
+      'Moves the last value to the root and removes the old maximum, then sinks the root past its larger child.',
+    args: [],
+  },
 };
 
 // `Object.hasOwn` keeps ids such as `constructor` from resolving to

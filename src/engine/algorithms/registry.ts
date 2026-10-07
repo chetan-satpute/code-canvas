@@ -9,6 +9,7 @@ import { binarySearchTreeRemove } from './binary-search-tree-remove.ts';
 import { linkedListInsertAfter } from './linked-list-insert-after.ts';
 import { linkedListInsertHead } from './linked-list-insert-head.ts';
 import { linkedListRemove } from './linked-list-remove.ts';
+import { maxHeapPop } from './max-heap-pop.ts';
 import { maxHeapPush } from './max-heap-push.ts';
 
 // Keyed by the catalog's algorithm ids. An algorithm listed without a runner
@@ -25,6 +26,7 @@ const runners: Record<string, AlgorithmRunner> = {
   'binary-search-tree-insert': binarySearchTreeInsert,
   'binary-search-tree-remove': binarySearchTreeRemove,
   'max-heap-push': maxHeapPush,
+  'max-heap-pop': maxHeapPop,
 };
 
 // `Object.hasOwn` keeps ids such as `constructor` from resolving to

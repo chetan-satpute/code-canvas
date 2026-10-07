@@ -37,6 +37,7 @@ src/engine/
     binary-search-tree-insert.ts
     binary-search-tree-remove.ts
     max-heap-push.ts
+    max-heap-pop.ts
   structures/
     registry.ts        StructureId → { create, operations }
     array/
@@ -311,6 +312,11 @@ slots, while the tree's two nodes stay where they stand and trade their
 values and variants. A tree node is held in place by its links, and moving it
 drags them out of shape, which reads as the tree coming apart rather than as
 two values swapping.
+
+`append(value)` and `removeLast()` add and take away the last slot, a leaf
+of the tree, with its link. Neither lays the heap out, so a run can open or
+close the tree's column around the fade. `setValue(i, value)` writes a value
+into a slot in both views where it stands.
 
 Every operation is instant:
 
@@ -627,6 +633,65 @@ index and a label is drawn over a node; the climbing value takes the near
 lane. Only once the cells have landed do the tree's two nodes trade their
 values, in place, in one frame. When the step ends, every cell and node is
 where `rearrange()` would put it.
+
+### Pop
+
+Pop takes no arguments.
+
+| Step                  | Canvas                                                                                      | Memory                  |
+| --------------------- | ------------------------------------------------------------------------------------------- | ----------------------- |
+| `enter`, `emptyCheck` | unchanged                                                                                   | —                       |
+| `empty`               | unchanged                                                                                   | —                       |
+| `max`                 | the root `tertiary`                                                                         | max                     |
+| `last`                | the last cell, node and link fade out, then the tree closes their column                    | max, last               |
+| `restCheck`           | unchanged                                                                                   | max, last               |
+| `replace`             | a copy of `last` fades in past the row's end, goes under the row into the root, `secondary` | max, last               |
+| `start`               | cursor `index` under the root                                                               | max, last, index        |
+| `child`               | cursor `child` under the left child; none past the end                                      | max, last, index, child |
+| `leafCheck`           | unchanged                                                                                   | max, last, index, child |
+| `leaf`                | the value `success`                                                                         | max, last, index, child |
+| `pick`                | both children `tertiary`; unchanged with a lone left child                                  | max, last, index, child |
+| `right`               | the left child back to `primary`, `child` moves to the right child                          | max, last, index, child |
+| `compare`             | the smaller child back to `primary`; the one kept as `child` `tertiary`                     | max, last, index, child |
+| `stop`                | the value `success`, the child back to `primary`                                            | max, last, index, child |
+| `swap`                | the two cells pass under the row into each other's slots; the tree's nodes trade values     | max, last, index, child |
+| `descend`             | the upper slot back to `primary`, `index` moves down to share the label with `child`        | max, last, index, child |
+| `return`              | `index` and `child` gone                                                                    | max, last               |
+| `exit`                | colors reset, `max` and `last` gone                                                         | —                       |
+
+The heap is named bare in the signature (`pop(heap)`), as in Push. The
+returned value is `max`, which memory shows on the `return` step: the root
+it was read from has been overwritten by then, or popped from a heap of one,
+so memory is the only place it is shown. `index`
+is declared in the `if` block and `child` in the loop body, so both have left
+scope by `return`, and `child` leaves before each new pass declares it again.
+The heap draws its cursors only under slots that exist, so `child` past the
+last slot, on the step that ends the descent at a leaf, is in memory only.
+
+`heap.pop()` takes away the last slot, a leaf of the tree, which is the
+reverse of Push's `append`: the cell, the node and its link fade out while
+they still stand where they were, and then the tree closes the column the
+leaf had, moving every node after it in order one column back. When the step
+ends, every node is where `rearrange()` would put it.
+
+`heap[0] = last` is an assignment, as in Merge Sort: it copies a value into a
+slot that already exists, and the variable keeps it. So what travels is a
+floating copy, and the root takes the value where it stands. `last` has no
+place on the canvas, so the copy fades in at the slot it was popped from,
+just past the row's end, then goes down into the lane under the row, along
+it, and up into the root; along the row itself it would cross every cell.
+The tree's root takes the value in the same frame the cell does, as in a
+swap: the tree changes in place, never by a node travelling. The value is
+`secondary` from there on, and its colors travel with it through every swap,
+so the reader can follow it down the heap. The step that reads `max` marks
+the root `tertiary` until the copy overwrites it.
+
+The sift-down compares the two children first, marking both, and keeps the
+larger as `child`. The listing increments `child` to reach the right child,
+rather than naming `left` and `right` as variables of their own: those are
+adjacent slots, and their cursors would join into labels such as
+`index child right` that run into the next cell's. The swap is Push's
+`animateSwap`, with the sinking value in the near lane.
 
 ### Merge Sort
 
