@@ -31,13 +31,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
       'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
   },
   {
-    id: 'array-remove-value',
-    structureId: 'array',
-    title: 'Remove Value',
-    description:
-      'Closes the gap left at an index by shifting every later element one place back, then drops the last slot.',
-  },
-  {
     id: 'linked-list-insert-after',
     structureId: 'linked-list',
     title: 'Insert after Target',

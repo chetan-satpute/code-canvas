@@ -47,6 +47,14 @@ const algorithms: Record<string, Algorithm> = {
       { name: 'value', placeholder: 'e.g. 42' },
     ],
   },
+  'array-remove-value': {
+    id: 'array-remove-value',
+    structureId: 'array',
+    title: 'Remove Value',
+    description:
+      'Closes the gap left at an index by copying every later element one place back, then drops the last slot.',
+    args: [{ name: 'index', placeholder: 'e.g. 2', kind: 'integer' }],
+  },
   'linked-list-insert-head': {
     id: 'linked-list-insert-head',
     structureId: 'linked-list',

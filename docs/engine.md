@@ -30,6 +30,7 @@ src/engine/
     array-binary-search.ts
     array-merge-sort.ts
     array-insert-value.ts
+    array-remove-value.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
     binary-search-tree-remove.ts
@@ -692,6 +693,32 @@ until the next pass overwrites it. The last pass leaves a copy at `index`,
 which the write overwrites. The value written is a parameter with no cell to
 come from, so it fades in one row above the slot, over its index, and drops
 in. When the step ends, every cell is where `rearrange()` would put it.
+
+### Remove Value
+
+| Step         | Canvas                                                                  | Memory   |
+| ------------ | ----------------------------------------------------------------------- | -------- |
+| `enter`      | cursor `index` under its slot, if it has one                            | index    |
+| `guard`      | unchanged                                                               | index    |
+| `outOfRange` | unchanged                                                               | index    |
+| `loop`       | the last copy's colors reset, cursor `i` under cell i                   | index, i |
+| `shift`      | cell i + 1 `secondary`, and a copy of it travels into cell i, `success` | index, i |
+| `shrink`     | `i` gone; the last slot fades out with its index and leaves the row     | index    |
+| `exit`       | `index` gone                                                            | index    |
+
+The listing is Insert Value run backwards: every element after the index is
+copied one place back, from the front, and then the array drops its last
+slot. An index outside `[0, length − 1]` fails the guard and the call returns
+with the array untouched, which covers an empty array too. The structure
+card's Remove clamps instead, for the reason Insert Value gives.
+
+`array[i] = array[i + 1]` animates with Insert Value's `animateCopy`, in the
+other direction. The last pass leaves the last value in both of the last two
+cells. `array.length -= 1` drops the last slot whatever it holds
+(`animateShrink`), so the duplicate fades out, rather than a value appearing
+to vanish from the middle. Removing the last cell copies nothing, and leaves
+`index` under the empty slot past the end until the call returns. When the
+step ends, every cell is where `rearrange()` would put it.
 
 ### Adding an algorithm
 
