@@ -63,6 +63,17 @@ const algorithms: Record<string, Algorithm> = {
       'Points a new node at the current head and makes it the head, so the list grows in constant time.',
     args: [{ name: 'value', placeholder: 'e.g. 42' }],
   },
+  'linked-list-insert-after': {
+    id: 'linked-list-insert-after',
+    structureId: 'linked-list',
+    title: 'Insert after Target',
+    description:
+      'Follows the chain to the node holding the target, then splices a new node in behind it.',
+    args: [
+      { name: 'target', placeholder: 'e.g. 13' },
+      { name: 'value', placeholder: 'e.g. 42' },
+    ],
+  },
   'binary-search-tree-insert': {
     id: 'binary-search-tree-insert',
     structureId: 'binary-search-tree',

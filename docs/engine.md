@@ -32,6 +32,7 @@ src/engine/
     array-insert-value.ts
     array-remove-value.ts
     linked-list-insert-head.ts
+    linked-list-insert-after.ts
     binary-search-tree-insert.ts
     binary-search-tree-remove.ts
     max-heap-push.ts
@@ -439,6 +440,36 @@ comes first and the rise second. Done at once, the rising node would pass
 through the old head while it is still leaving the slot. The link stretches
 through the slide because both of its nodes hold it. When the step ends, every
 node is where `rearrange()` would put it.
+
+### Insert after Target
+
+| Step           | Canvas                                                                                        | Memory        |
+| -------------- | --------------------------------------------------------------------------------------------- | ------------- |
+| `enter`        | unchanged                                                                                     | target, value |
+| `start`        | pointer `node` under the head; none on an empty list                                          | target, value |
+| `search`       | `node` `secondary`                                                                            | target, value |
+| `advance`      | `node` back to `primary`, and the pointer moves to the next node, or goes at `null`           | target, value |
+| `missingCheck` | unchanged                                                                                     | target, value |
+| `missing`      | unchanged                                                                                     | target, value |
+| `create`       | the new node fades in, `success`, one row below the slot after `node`, with pointer `newNode` | target, value |
+| `link`         | its link to `node`'s successor fades in; none after the tail                                  | target, value |
+| `splice`       | the old link gives way to one to the new node, the list opens a gap, the node rises in        | target, value |
+| `exit`         | colors reset, pointers gone                                                                   | target, value |
+
+The scan stops at the first node holding the target, the one the structure
+card's Insert after uses too. A target the list does not hold walks `node` off
+the tail, and the run returns with nothing changed.
+
+The new node is created apart from the list, as in Insert at Head, and staged
+one row below the slot it will take, which `node`'s successor still holds.
+Only `newNode` reaches it until the splice. Each relink is its own step, and
+each link fades in pointing at a node already on the canvas. `node.next =
+newNode` overwrites a link, so the old one fades out before the new one fades
+in, and the old one is never drawn running through the new node. Only then
+does the node join the row: the successor and every node after it slide one
+place along, then the node rises into the gap. Rising at once, it would pass
+into the successor still standing in its slot. When the step ends, every node
+is where `rearrange()` would put it.
 
 ### Insert Value
 

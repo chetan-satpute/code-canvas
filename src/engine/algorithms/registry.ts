@@ -6,6 +6,7 @@ import { arrayMergeSort } from './array-merge-sort.ts';
 import { arrayRemoveValue } from './array-remove-value.ts';
 import { binarySearchTreeInsert } from './binary-search-tree-insert.ts';
 import { binarySearchTreeRemove } from './binary-search-tree-remove.ts';
+import { linkedListInsertAfter } from './linked-list-insert-after.ts';
 import { linkedListInsertHead } from './linked-list-insert-head.ts';
 import { maxHeapPush } from './max-heap-push.ts';
 
@@ -18,6 +19,7 @@ const runners: Record<string, AlgorithmRunner> = {
   'array-insert-value': arrayInsertValue,
   'array-remove-value': arrayRemoveValue,
   'linked-list-insert-head': linkedListInsertHead,
+  'linked-list-insert-after': linkedListInsertAfter,
   'binary-search-tree-insert': binarySearchTreeInsert,
   'binary-search-tree-remove': binarySearchTreeRemove,
   'max-heap-push': maxHeapPush,
