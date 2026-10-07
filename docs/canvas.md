@@ -67,6 +67,12 @@ copy an assignment carries from one array to another. They are drawn over
 everything, labels included: a copy covers a label only while passing it,
 and an annotation drawn over a moving value would garble both.
 
+A node with `empty` set is a slot that holds nothing yet, such as the one
+`array.length += 1` adds before anything is written into it. It is drawn with
+its fill, sheen and rim but no text, and its `value` is ignored. The flag is
+optional, so every other node leaves it out. On the engine side it is
+`CoreNode.empty` (see [engine.md](engine.md)).
+
 ## Colors and font
 
 The canvas has no colors of its own. `src/index.css` defines `--canvas-*`

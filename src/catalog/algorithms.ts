@@ -36,6 +36,17 @@ const algorithms: Record<string, Algorithm> = {
       'Splits the array down to single elements, then merges the halves back together in order.',
     args: [],
   },
+  'array-insert-value': {
+    id: 'array-insert-value',
+    structureId: 'array',
+    title: 'Insert Value',
+    description:
+      'Makes room at an index by copying every later element one place along, then writes the new value.',
+    args: [
+      { name: 'index', placeholder: 'e.g. 2', kind: 'integer' },
+      { name: 'value', placeholder: 'e.g. 42' },
+    ],
+  },
   'linked-list-insert-head': {
     id: 'linked-list-insert-head',
     structureId: 'linked-list',

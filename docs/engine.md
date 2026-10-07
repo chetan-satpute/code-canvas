@@ -29,6 +29,7 @@ src/engine/
     array-linear-search.ts
     array-binary-search.ts
     array-merge-sort.ts
+    array-insert-value.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
     binary-search-tree-remove.ts
@@ -39,6 +40,8 @@ src/engine/
       structure.ts     CoreArray, with its cursors
       operations.ts    randomize, sort, insert, remove
       algorithm.ts     defineArrayAlgorithm
+      copy.ts          animateCopy: an assignment from one cell to another
+      resize.ts        animateGrow, animateShrink: a slot made or dropped
     linked-list/
       structure.ts     CoreLinkedList and its nodes, head and pointers
       operations.ts    randomize, insert at head, insert after, remove
@@ -179,6 +182,12 @@ Every operation is instant:
 
 The index for Insert is clamped to `[0, length]`, and for Remove to
 `[0, length − 1]`. Removing from an empty array does nothing.
+
+A cell can be **empty**: `CoreNode.empty` marks a slot an algorithm has made
+but not yet written, such as the one `array.length += 1` adds. It serializes
+with `empty` set, which the canvas draws as a cell with no text (see
+[canvas.md](canvas.md)), and its `value` means nothing until a write clears
+the flag. Only a run makes one, and the run fills it before it ends.
 
 ## The linked list
 
@@ -390,7 +399,11 @@ as an index, not on a node, because an index can point past the last cell:
 the loop check that ends a linear search has `i === array.length`, and its
 cursor sits under the empty cell after the array. Cursors on the same cell
 share one label (`i j`). The label's position comes from the index when the
-array serializes, and `restore` clears every cursor. The array and the max
+array serializes, and `restore` clears every cursor. A cursor is also drawn
+one slot before the first cell, where Binary Search's `high` lands at `-1`. An
+index further out than one slot beyond either end, such as one Insert Value is
+about to reject, stands under no slot: the array leaves it off the canvas, and
+memory still shows it. The array and the max
 heap keep them in a `CoreCursors` (`cursors.ts`), and each says where a cell
 is drawn when it serializes.
 
@@ -582,7 +595,8 @@ step is built.
 already exists: `left` and `right` are read and never change, and `array`
 keeps every cell it had. So what travels is a copy that belongs to neither
 array, held by `board.float`, and the cell it lands on takes the value where
-it stands. The copy rises out of the half, goes along the row under `array`
+it stands (`animateCopy` in `structures/array/copy.ts`, which Insert Value
+shares). The copy rises out of the half, goes along the row under `array`
 and up into the cell; going straight there, it would cross the cells in
 between. Moving the halves' own nodes up into `array` would sort just as
 well, but it would show the reader a different algorithm from the listing.
@@ -645,6 +659,39 @@ single element), and `high` is drawn left of the first cell when it is
 `missing` restores the cells' opacity before marking them, as Linear Search
 marks the whole array: after the search, every cell was ruled out, and a
 `danger` colour at 30% would barely show.
+
+### Insert Value
+
+| Step         | Canvas                                                                     | Memory          |
+| ------------ | -------------------------------------------------------------------------- | --------------- |
+| `enter`      | cursor `index` under its slot, if it has one                               | index, value    |
+| `guard`      | unchanged                                                                  | index, value    |
+| `outOfRange` | unchanged                                                                  | index, value    |
+| `grow`       | an empty slot fades in at the end of the row, with its index               | index, value    |
+| `loop`       | the last copy's colors reset, cursor `i` under cell i                      | index, value, i |
+| `shift`      | cell i − 1 `secondary`, and a copy of it travels into cell i, `success`    | index, value, i |
+| `write`      | `i` gone; the value fades in over the slot's index and drops in, `success` | index, value    |
+| `exit`       | color reset, `index` gone                                                  | index, value    |
+
+The listing shows what an insert costs: the array grows by one slot, every
+element from the index on is copied one place along, from the back, and only
+then is the value written. An index outside `[0, length]` fails the guard and
+the call returns with the array untouched, which is what the listing does.
+That differs from the structure card's Insert, which clamps: the card is an
+edit, the run is the code. The array is named bare in the signature
+(`insertAt(array, index: 2, value: 42)`), as Push names the heap, since it
+changes as the run goes.
+
+`array.length += 1` adds a slot that holds nothing (`animateGrow` in
+`structures/array/resize.ts`), so it fades in empty rather than holding a
+value the code never wrote. `array[i] = array[i - 1]` is an assignment, so it
+animates as Merge Sort's do: a floating copy drops into the lane under the
+row, goes one cell along and rises into cell i, which takes the value where it
+stands. Cell i − 1 keeps its value, so for one step the array holds it twice,
+until the next pass overwrites it. The last pass leaves a copy at `index`,
+which the write overwrites. The value written is a parameter with no cell to
+come from, so it fades in one row above the slot, over its index, and drops
+in. When the step ends, every cell is where `rearrange()` would put it.
 
 ### Adding an algorithm
 

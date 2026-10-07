@@ -1,12 +1,12 @@
 import { NODE_HEIGHT, NODE_WIDTH } from '#canvas/elements/node.ts';
 
 import type { AlgorithmRun } from '../algorithm.ts';
-import { animateMove, appear, disappear } from '../animation.ts';
+import { appear, disappear } from '../animation.ts';
 import type { CoreBoard } from '../board.ts';
 import type { CoreCall } from '../call.ts';
-import { CoreNode } from '../elements/node.ts';
 import type { CoreRun } from '../run.ts';
 import { defineArrayAlgorithm } from '../structures/array/algorithm.ts';
+import { animateCopy } from '../structures/array/copy.ts';
 import { CoreArray } from '../structures/array/structure.ts';
 
 // From an array to the halves sliced from it. The first row between holds the
@@ -192,7 +192,7 @@ function* merge(
   // `array[k] = half[index]`. Both calls show this array in their signature,
   // and it changes under them.
   const write = (side: Side) => {
-    copy(board, halves[side].nodes[read[side]], array, k);
+    animateCopy(board, halves[side].nodes[read[side]], array, k);
 
     call.set('array', array.toData());
     caller.set('array', array.toData());
@@ -268,28 +268,4 @@ function* merge(
   for (const name of ['i', 'j', 'k']) call.clear(name);
 
   return run.return('mergeExit');
-}
-
-// `to[index] = from`, where `from` is a cell of another array. An assignment
-// copies a value, so neither array gains or loses a cell: what travels is a
-// copy belonging to neither, and the cell it lands on takes the value where
-// it stands.
-function copy(board: CoreBoard, from: CoreNode, to: CoreArray, index: number) {
-  const target = to.nodes[index];
-
-  const travelling = new CoreNode(from.value);
-  travelling.x = from.x;
-  travelling.y = from.y;
-  travelling.variant = 'secondary';
-  board.float(travelling);
-
-  // Up into the lane under `to` first, then along it and up into the cell.
-  // Straight there, it would cross the cells in between.
-  animateMove(board, travelling, from.x, to.y + NODE_HEIGHT);
-  animateMove(board, travelling, target.x, target.y);
-
-  board.unfloat(travelling);
-  target.value = from.value;
-  target.variant = 'success';
-  board.pushFrame();
 }

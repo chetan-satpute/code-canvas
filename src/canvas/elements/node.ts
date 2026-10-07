@@ -19,6 +19,9 @@ export interface CanvasNode {
   value: number;
   variant: NodeVariant;
   opacity: number;
+  // A slot that holds nothing yet: drawn as a cell with no text, and `value`
+  // means nothing.
+  empty?: true;
 }
 
 export function drawCanvasNode(
@@ -26,7 +29,7 @@ export function drawCanvasNode(
   node: CanvasNode,
   theme: CanvasTheme,
 ) {
-  const { x, y, value, variant, opacity } = node;
+  const { x, y, value, variant, opacity, empty } = node;
 
   ctx.save();
   ctx.globalAlpha = opacity;
@@ -59,11 +62,13 @@ export function drawCanvasNode(
   ctx.strokeStyle = theme.nodeRim;
   ctx.stroke();
 
-  ctx.fillStyle = theme.nodeForeground;
-  ctx.font = `${NODE_FONT_SIZE}px ${theme.font}`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText(value.toString(), x + NODE_WIDTH / 2, y + NODE_HEIGHT / 2);
+  if (!empty) {
+    ctx.fillStyle = theme.nodeForeground;
+    ctx.font = `${NODE_FONT_SIZE}px ${theme.font}`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(value.toString(), x + NODE_WIDTH / 2, y + NODE_HEIGHT / 2);
+  }
 
   ctx.restore();
 }

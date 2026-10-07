@@ -31,13 +31,6 @@ export const plannedAlgorithms: PlannedAlgorithm[] = [
       'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
   },
   {
-    id: 'array-insert-value',
-    structureId: 'array',
-    title: 'Insert Value',
-    description:
-      'Makes room at an index by copying every later element one place along, then writes the new value.',
-  },
-  {
     id: 'array-remove-value',
     structureId: 'array',
     title: 'Remove Value',

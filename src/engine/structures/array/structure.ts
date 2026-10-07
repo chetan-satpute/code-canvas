@@ -54,11 +54,14 @@ export class CoreArray extends CoreStructure<number[]> {
   protected serializeContents(frame: CanvasFrame) {
     for (const node of this.nodes) node.serialize(frame);
 
-    // Past the last cell too, where the cell would be.
-    this.cursors.serialize(frame, (index) => ({
-      x: this.x + index * NODE_WIDTH,
-      y: this.y,
-      opacity: this.opacity,
-    }));
+    // One slot beyond either end too, where a cell would be: a search's bound
+    // can step to -1 or to `length`. An index further out than that, such as
+    // one an algorithm is about to reject as out of range, stands under no
+    // slot, and is read in memory instead.
+    this.cursors.serialize(frame, (index) =>
+      index < -1 || index > this.nodes.length
+        ? null
+        : { x: this.x + index * NODE_WIDTH, y: this.y, opacity: this.opacity },
+    );
   }
 }

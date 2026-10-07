@@ -1,5 +1,6 @@
 import type { AlgorithmRunner } from '../algorithm.ts';
 import { arrayBinarySearch } from './array-binary-search.ts';
+import { arrayInsertValue } from './array-insert-value.ts';
 import { arrayLinearSearch } from './array-linear-search.ts';
 import { arrayMergeSort } from './array-merge-sort.ts';
 import { binarySearchTreeInsert } from './binary-search-tree-insert.ts';
@@ -13,6 +14,7 @@ const runners: Record<string, AlgorithmRunner> = {
   'array-binary-search': arrayBinarySearch,
   'array-linear-search': arrayLinearSearch,
   'array-merge-sort': arrayMergeSort,
+  'array-insert-value': arrayInsertValue,
   'linked-list-insert-head': linkedListInsertHead,
   'binary-search-tree-insert': binarySearchTreeInsert,
   'binary-search-tree-remove': binarySearchTreeRemove,

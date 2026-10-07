@@ -27,6 +27,10 @@ export class CoreNode {
   variant: NodeVariant;
   opacity: number;
 
+  // A slot an algorithm has made but not yet written (`array.length += 1`).
+  // It is drawn with no value, and `value` means nothing until it is written.
+  empty: boolean;
+
   // Annotations that travel with the node: the array index above it, a
   // pointer name below it. Only the text is stored; position and opacity are
   // taken from the node when it serializes, so nothing has to re-pin them
@@ -40,6 +44,7 @@ export class CoreNode {
     this.value = value;
     this.variant = 'primary';
     this.opacity = 1;
+    this.empty = false;
 
     this.labels = {};
   }
@@ -60,6 +65,7 @@ export class CoreNode {
       value: this.value,
       variant: this.variant,
       opacity: this.opacity,
+      ...(this.empty && { empty: true }),
     });
 
     for (const [position, text] of Object.entries(this.labels)) {
