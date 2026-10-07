@@ -20,6 +20,14 @@ const algorithms: Record<string, Algorithm> = {
       'Walks the array from the front, comparing every element until the target turns up or the end is reached.',
     args: [{ name: 'target', placeholder: 'e.g. 42' }],
   },
+  'array-binary-search': {
+    id: 'array-binary-search',
+    structureId: 'array',
+    title: 'Binary Search',
+    description:
+      'Halves a sorted array on every step, discarding the side that cannot hold the target. Sort the array first: an unsorted one can hide the target from it.',
+    args: [{ name: 'target', placeholder: 'e.g. 42' }],
+  },
   'array-merge-sort': {
     id: 'array-merge-sort',
     structureId: 'array',

@@ -27,6 +27,7 @@ src/engine/
   algorithms/
     registry.ts        algorithm id → AlgorithmRunner
     array-linear-search.ts
+    array-binary-search.ts
     array-merge-sort.ts
     linked-list-insert-head.ts
     binary-search-tree-insert.ts
@@ -601,6 +602,49 @@ when it returns. `merge` has no `mid`, so it comes off for that call too.
 Signatures print the arrays whole. `merge` writes into an array that both it
 and its caller take as `array`, so each write updates both signatures and
 neither shows a value the array no longer holds.
+
+### Binary Search
+
+The listing requires a sorted array, and nothing in the catalog can declare
+that: an algorithm has arguments, not preconditions, and the run does not
+touch the array before it starts. Sorting it first would be work the listing
+does not show. So the run searches the array as it is. The reader sorts it
+with the structure card's Sort, and the algorithm's description says to. On an
+array that is not sorted, the run shows what the code does, which can end at
+`missing` with the target in a cell.
+
+| Step      | Canvas                                                                | Memory            |
+| --------- | --------------------------------------------------------------------- | ----------------- |
+| `enter`   | unchanged                                                             | target            |
+| `low`     | cursor `low` under cell 0                                             | target, low       |
+| `high`    | cursor `high` under the last cell, left of the array when it is empty | target, low, high |
+| `loop`    | unchanged; the check that ends the loop, with `low > high`, is a step | target, low, high |
+| `mid`     | cursor `mid` under its cell                                           | + mid             |
+| `compare` | cell `mid` `secondary`                                                | + mid             |
+| `found`   | cell `mid` `success`                                                  | + mid             |
+| `less`    | unchanged                                                             | + mid             |
+| `right`   | cells `0..mid` dimmed, cell `mid` `primary`, `low` one past `mid`     | + mid             |
+| `left`    | cells `mid..` dimmed, cell `mid` `primary`, `high` one before `mid`   | + mid             |
+| `missing` | every cell back to full opacity and `danger`                          | low, high         |
+| `exit`    | colors, dimming and cursors gone                                      | target            |
+
+A cell the search has ruled out stays at 30% opacity for the rest of the run,
+so the cells between `low` and `high` are the ones still in play. Dimming is
+an opacity change rather than a variant: the theme's variants say what is
+being looked at or what the outcome is, and a discarded cell is neither. It is
+instant, like a recolouring, since no cell moves or appears. A node's index
+label takes its opacity, so the cell's index fades with it.
+
+`mid` goes out of scope at the end of the loop body, so its cursor and memory
+entry leave after `right` or `left`, before the next `loop`. `low` and `high`
+are the function's, and stay through `found` or `missing`, the lines that can
+still read them. Cursors on the same cell share one label (`low mid high` on a
+single element), and `high` is drawn left of the first cell when it is
+`-1`, as `low` is drawn past the last cell when it is `length`.
+
+`missing` restores the cells' opacity before marking them, as Linear Search
+marks the whole array: after the search, every cell was ruled out, and a
+`danger` colour at 30% would barely show.
 
 ### Adding an algorithm
 

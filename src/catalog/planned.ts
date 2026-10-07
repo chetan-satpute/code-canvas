@@ -24,13 +24,6 @@ export const plannedStructures: PlannedStructure[] = [];
 
 export const plannedAlgorithms: PlannedAlgorithm[] = [
   {
-    id: 'array-binary-search',
-    structureId: 'array',
-    title: 'Binary Search',
-    description:
-      'Halves a sorted array on every step, discarding the side that cannot hold the target.',
-  },
-  {
     id: 'array-quick-sort',
     structureId: 'array',
     title: 'Quick Sort',
