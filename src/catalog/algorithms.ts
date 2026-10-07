@@ -55,6 +55,14 @@ const algorithms: Record<string, Algorithm> = {
       'Closes the gap left at an index by copying every later element one place back, then drops the last slot.',
     args: [{ name: 'index', placeholder: 'e.g. 2', kind: 'integer' }],
   },
+  'array-quick-sort': {
+    id: 'array-quick-sort',
+    structureId: 'array',
+    title: 'Quick Sort',
+    description:
+      'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
+    args: [],
+  },
   'linked-list-insert-head': {
     id: 'linked-list-insert-head',
     structureId: 'linked-list',

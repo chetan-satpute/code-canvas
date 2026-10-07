@@ -22,12 +22,4 @@ export interface PlannedAlgorithm {
 
 export const plannedStructures: PlannedStructure[] = [];
 
-export const plannedAlgorithms: PlannedAlgorithm[] = [
-  {
-    id: 'array-quick-sort',
-    structureId: 'array',
-    title: 'Quick Sort',
-    description:
-      'Partitions the array around a pivot so smaller values fall left and larger right, then sorts each side.',
-  },
-];
+export const plannedAlgorithms: PlannedAlgorithm[] = [];

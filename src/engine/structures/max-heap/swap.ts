@@ -2,25 +2,37 @@ import { NODE_HEIGHT } from '#canvas/elements/node.ts';
 
 import { animateMoveMany } from '../../animation.ts';
 import type { CoreBoard } from '../../board.ts';
-import type { CoreMaxHeap } from './structure.ts';
+import type { CoreNode } from '../../elements/node.ts';
+import type { Position } from './structure.ts';
 
-// `[heap[a], heap[b]] = [heap[b], heap[a]]`, animated. In the array row the
-// two cells trade slots, leaving the row to do it, since along it each would
-// pass through every cell between. They pass under the row, one lane each:
-// the row above holds every slot's index, and a label is drawn over a node.
-// The near lane is the cursors' row, which is clear only of the cursors on
-// `a` and `b`, left out while their cells are away. `a` takes the near lane.
-// The tree changes only once they land, in `heap.swap`.
+// A row of cells, one per slot: the max heap's array row, or the array. Each
+// leaves a slot's index and cursors out while its cell is away from the slot.
+export interface SwapRow {
+  cells: CoreNode[];
+  slot(index: number): Position;
+  swap(a: number, b: number): void;
+  rearrange(): void;
+}
+
+// `[row[a], row[b]] = [row[b], row[a]]`, animated, for two different slots.
+// The two cells trade slots, leaving the row to do it, since along it each
+// would pass through every cell between. They pass under the row, one lane
+// each: the row above holds every slot's index, and a label is drawn over a
+// node. The near lane is the cursors' row, which is clear only of the cursors
+// on `a` and `b`, left out while their cells are away, so a caller keeps any
+// other cursor out from between them. `a` takes the near lane. Anything else
+// the row draws, such as the heap's tree, changes only once they land, in
+// `row.swap`.
 export function animateSwap(
   board: CoreBoard,
-  heap: CoreMaxHeap,
+  row: SwapRow,
   a: number,
   b: number,
 ) {
-  const first = heap.cells[a];
-  const second = heap.cells[b];
-  const from = heap.slot(a);
-  const to = heap.slot(b);
+  const first = row.cells[a];
+  const second = row.cells[b];
+  const from = row.slot(a);
+  const to = row.slot(b);
 
   const near = from.y + NODE_HEIGHT;
   const far = from.y + 2 * NODE_HEIGHT;
@@ -41,9 +53,9 @@ export function animateSwap(
   ]);
 
   // The last tick left both cells home but in each other's slot, so the
-  // swapped heap, with its labels back and the tree's values traded, needs a
-  // frame of its own.
-  heap.swap(a, b);
-  heap.rearrange();
+  // swapped row, with its labels back and anything else it draws updated,
+  // needs a frame of its own.
+  row.swap(a, b);
+  row.rearrange();
   board.pushFrame();
 }

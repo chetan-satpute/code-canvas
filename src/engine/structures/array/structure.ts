@@ -1,4 +1,4 @@
-import { NODE_WIDTH } from '#canvas/elements/node.ts';
+import { NODE_HEIGHT, NODE_WIDTH } from '#canvas/elements/node.ts';
 import type { CanvasFrame } from '#canvas/frame.ts';
 
 import { CoreCursors } from '../../cursors.ts';
@@ -21,6 +21,12 @@ export class CoreArray extends CoreStructure<number[]> {
     this.restore(values);
   }
 
+  // The nodes by slot, under the name the max heap's row uses, so a swap
+  // animates the same way in both (`animateSwap`).
+  get cells(): CoreNode[] {
+    return this.nodes;
+  }
+
   toData(): number[] {
     return this.nodes.map((node) => node.value);
   }
@@ -39,29 +45,55 @@ export class CoreArray extends CoreStructure<number[]> {
     this.cursors.delete(name);
   }
 
-  rearrange() {
-    this.nodes.forEach((node, index) => {
-      node.x = this.x + index * NODE_WIDTH;
-      node.y = this.y;
+  slot(index: number): { x: number; y: number } {
+    return { x: this.x + index * NODE_WIDTH, y: this.y };
+  }
 
-      // Indices are a property of the array, not of the node, so they are
-      // rewritten on every layout: an element that shifts takes its new
-      // index, not the one it was created with.
-      node.setLabel('top', index.toString());
-    });
+  // `[array[a], array[b]] = [array[b], array[a]]`. The cells change slots and
+  // are left where they stand, so a run can animate them there first.
+  swap(a: number, b: number) {
+    [this.nodes[a], this.nodes[b]] = [this.nodes[b], this.nodes[a]];
+  }
+
+  rearrange() {
+    this.nodes.forEach((node, index) => Object.assign(node, this.slot(index)));
+  }
+
+  // A cell away from its slot is mid-swap, passing under the row through the
+  // cursors' row, so its slot's index and cursors are left out until it
+  // lands. Past either end there is no cell to be away.
+  private away(index: number): boolean {
+    const node = this.nodes[index];
+    if (node === undefined) return false;
+
+    const { x, y } = this.slot(index);
+
+    return node.x !== x || node.y !== y;
   }
 
   protected serializeContents(frame: CanvasFrame) {
-    for (const node of this.nodes) node.serialize(frame);
+    // Indices belong to the slot, not to the value in it, so they are drawn
+    // at the slot rather than carried by the node.
+    this.nodes.forEach((node, index) => {
+      node.serialize(frame);
+      if (this.away(index)) return;
+
+      frame.labels.push({
+        x: node.x,
+        y: node.y - NODE_HEIGHT,
+        text: index.toString(),
+        opacity: node.opacity,
+      });
+    });
 
     // One slot beyond either end too, where a cell would be: a search's bound
     // can step to -1 or to `length`. An index further out than that, such as
     // one an algorithm is about to reject as out of range, stands under no
     // slot, and is read in memory instead.
     this.cursors.serialize(frame, (index) =>
-      index < -1 || index > this.nodes.length
+      index < -1 || index > this.nodes.length || this.away(index)
         ? null
-        : { x: this.x + index * NODE_WIDTH, y: this.y, opacity: this.opacity },
+        : { ...this.slot(index), opacity: this.opacity },
     );
   }
 }

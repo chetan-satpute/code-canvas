@@ -3,6 +3,7 @@ import { arrayBinarySearch } from './array-binary-search.ts';
 import { arrayInsertValue } from './array-insert-value.ts';
 import { arrayLinearSearch } from './array-linear-search.ts';
 import { arrayMergeSort } from './array-merge-sort.ts';
+import { arrayQuickSort } from './array-quick-sort.ts';
 import { arrayRemoveValue } from './array-remove-value.ts';
 import { binarySearchTreeInsert } from './binary-search-tree-insert.ts';
 import { binarySearchTreeRemove } from './binary-search-tree-remove.ts';
@@ -20,6 +21,7 @@ const runners: Record<string, AlgorithmRunner> = {
   'array-merge-sort': arrayMergeSort,
   'array-insert-value': arrayInsertValue,
   'array-remove-value': arrayRemoveValue,
+  'array-quick-sort': arrayQuickSort,
   'linked-list-insert-head': linkedListInsertHead,
   'linked-list-insert-after': linkedListInsertAfter,
   'linked-list-remove': linkedListRemove,

@@ -31,6 +31,8 @@ src/engine/
     array-merge-sort.ts
     array-insert-value.ts
     array-remove-value.ts
+
+    array-quick-sort.ts
     linked-list-insert-head.ts
     linked-list-insert-after.ts
     linked-list-remove.ts
@@ -57,7 +59,7 @@ src/engine/
     max-heap/
       structure.ts     CoreMaxHeap: its array row, its tree and cursors
       operations.ts    randomize, push, pop
-      swap.ts          animateSwap: two values trading slots
+      swap.ts          animateSwap: two values trading slots, here or in the array
       algorithm.ts     defineMaxHeapAlgorithm
   testing/
     trace.ts           traceRun: plays a run to the end for a test
@@ -172,8 +174,13 @@ an engine is a type error.
 ## The array
 
 Cells sit flush against each other, one `NODE_WIDTH` apart, because an
-array's elements are contiguous. `rearrange()` rewrites each cell's top label
-to its index: an index belongs to the position, not to the value.
+array's elements are contiguous. Each slot's index is drawn above it when the
+array serializes, not carried by the cell: an index belongs to the position,
+not to the value. `swap(a, b)` exchanges two cells between slots without
+moving them, and with `cells` and `slot(index)` it lets the max heap's
+`animateSwap` animate the trade (see Quick Sort). Like the heap's row, a slot
+whose cell is away from it, mid-swap, draws neither its index nor its
+cursors.
 
 Every operation is instant:
 
@@ -406,15 +413,16 @@ An index variable from the listing is drawn under the cell it indexes:
 `array.setCursor('i', i)` and `array.clearCursor('i')`. A cursor is stored
 as an index, not on a node, because an index can point past the last cell:
 the loop check that ends a linear search has `i === array.length`, and its
-cursor sits under the empty cell after the array. Cursors on the same cell
-share one label (`i j`). The label's position comes from the index when the
-array serializes, and `restore` clears every cursor. A cursor is also drawn
-one slot before the first cell, where Binary Search's `high` lands at `-1`. An
-index further out than one slot beyond either end, such as one Insert Value is
-about to reject, stands under no slot: the array leaves it off the canvas, and
-memory still shows it. The array and the max
-heap keep them in a `CoreCursors` (`cursors.ts`), and each says where a cell
-is drawn when it serializes.
+cursor sits under the empty cell after the array. A cursor is also drawn one
+slot before the first cell, where Binary Search's `high` lands at `-1`.
+Cursors on the same cell share one label (`i j`). The label's position comes
+from the index when the array serializes, it is left out while the cell at
+that index is away from its slot, and `restore` clears every cursor. An index
+further out than one slot beyond either end, such as one Insert Value is about
+to reject, stands under no slot: the array leaves it off the canvas, and
+memory still shows it. The array and the max heap keep them in a
+`CoreCursors` (`cursors.ts`), and each says where a cell is drawn when it
+serializes.
 
 ### Linear Search
 
@@ -848,6 +856,67 @@ cells. `array.length -= 1` drops the last slot whatever it holds
 to vanish from the middle. Removing the last cell copies nothing, and leaves
 `index` under the empty slot past the end until the call returns. When the
 step ends, every cell is where `rearrange()` would put it.
+
+### Quick Sort
+
+Quick Sort takes no arguments and recurses the way Merge Sort does: each call
+of `quickSort` and `partition` is its own generator, run with `yield*`, and
+its closing-brace step is its return value. The partition is Lomuto's, with
+the last value of the range as the pivot and `i` starting at `low`, the next
+slot for a value no bigger than the pivot. Starting `i` at `low - 1`, the
+other common form, would put a cursor under the empty cell before the range.
+
+| Step                    | Canvas                                                                   | Memory                 |
+| ----------------------- | ------------------------------------------------------------------------ | ---------------------- |
+| `enter`                 | cursors `low` and `high` under the range this call owns                  | low, high              |
+| `base`                  | unchanged                                                                | low, high              |
+| `sorted`                | a range of one `success`; an empty one, `high` before `low`, unchanged   | low, high              |
+| `partition`             | before the call, and again once it returns, with cursor `p`              | low, high; then p      |
+| `sortLeft`, `sortRight` | before the call, and again once it returns                               | low, high, p           |
+| `partitionEnter`        | `low` and `high`, now `partition`'s                                      | low, high              |
+| `pivot`                 | the pivot's cell, at `high`, `tertiary`                                  | low, high, pivot       |
+| `start`                 | cursor `i` under `low`                                                   | low, high, pivot, i    |
+| `loop`                  | cursor `j` under its cell; the check that ends the loop, on `high`, too  | low, high, pivot, i, j |
+| `compare`               | `array[j]` `secondary`; back to `primary` if it is bigger than the pivot | low, high, pivot, i, j |
+| `swap`                  | the cells at `j` and `i` pass under the row into each other's slots      | low, high, pivot, i, j |
+| `next`                  | the value swapped back to `primary`, `i` one along                       | low, high, pivot, i, j |
+| `placePivot`            | `j` gone; the pivot swaps into `i` and turns `success`                   | low, high, pivot, i    |
+| `returnIndex`           | unchanged                                                                | low, high, pivot, i    |
+| `partitionExit`         | `low`, `high` and `i` gone                                               | low, high              |
+| `exit`                  | the call's cursors gone; the outermost call resets the colors            | low, high              |
+
+`[array[i], array[j]] = [array[j], array[i]]` trades two values between two
+cells, so the two cells trade slots, with the max heap's `animateSwap`: each
+drops into a lane under the row, goes along it and rises into the other's
+slot. The value read at `j` takes the near lane and keeps its `secondary`
+color, so the reader sees it go left past the bigger values. While a cell is
+away, its slot's index and cursors are left out, since the near lane is the
+cursors' row. No other cursor is ever between the two: `low` is at or before
+`i`, `high` is past `j`, and `j` has left scope before the pivot's swap. A
+slot swapped with itself, when `i` and `j` are one, is a step with no
+movement, which is what the statement does.
+
+The pivot's cell is `tertiary` from the moment `pivot` reads it, and `j`
+stops short of it, so nothing moves it until `placePivot`. Once a pivot is
+placed it is in its final position, and so is a range of one, so both turn
+`success` and stay that way across calls, since every call works on the same
+array. By the outermost call's last `sortRight` every cell is `success`, and
+its closing brace puts them back to `primary`.
+
+`low` and `high` are drawn as cursors because they are the range a call owns:
+everything outside them is either placed already or another call's to sort.
+As in Merge Sort, the canvas names only what the running call can reach, so
+while a deeper call or `partition` runs, its caller's `low`, `high` and `p`
+come off and its own go on. An empty range shows what the code holds:
+`quickSort(array, 0, -1)` puts `high` under the empty cell before the array,
+and `quickSort(array, length, length - 1)` puts `low` past its end. A call's
+cursors come off at its closing brace, even its parameters', because the
+outermost one is the run's last step and the finished array should carry no
+names.
+
+The signature names the array bare (`quickSort(array, low: 0, high: 5)`), as
+Push does the heap: every call on the stack shares it, and it changes under
+all of them with each swap.
 
 ### Adding an algorithm
 

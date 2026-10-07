@@ -31,10 +31,10 @@ export class CoreNode {
   // It is drawn with no value, and `value` means nothing until it is written.
   empty: boolean;
 
-  // Annotations that travel with the node: the array index above it, a
-  // pointer name below it. Only the text is stored; position and opacity are
-  // taken from the node when it serializes, so nothing has to re-pin them
-  // after the node moves or fades.
+  // Annotations that travel with the value rather than with a slot, which an
+  // array's index and cursors belong to. Only the text is stored; position
+  // and opacity are taken from the node when it serializes, so nothing has to
+  // re-pin them after the node moves or fades.
   labels: Partial<Record<NodeLabelPosition, string>>;
 
   constructor(value: number) {

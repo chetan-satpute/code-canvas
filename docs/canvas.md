@@ -43,8 +43,8 @@ Position is held in one place, and everything else is derived from it:
   edge mid-animation and it is drawn correctly from its first frame. The
   drawing works out the node centers, pulls both ends back to the node
   borders plus a small gap, and puts an arrowhead at the end node.
-- A node's own labels, such as the index above an array cell or a pointer
-  name below it, are stored on the node as text only:
+- A node's own labels, annotations that travel with the value rather than
+  with a slot, are stored on the node as text only:
   `labels: { top?, right?, bottom?, left? }`. Their position and opacity
   are taken from the node when it serializes, so a label can never be left
   behind by a move or a fade.
