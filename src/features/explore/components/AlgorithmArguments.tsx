@@ -5,6 +5,7 @@ import Button from '#components/Button.tsx';
 import Icon from '#components/Icon.tsx';
 import TextInput from '#components/TextInput.tsx';
 import { invalidArguments, parseArgument } from '#utils/argument.ts';
+import cn from '#utils/cn.ts';
 
 interface AlgorithmArgumentsProps {
   args: ArgumentField[];
@@ -45,20 +46,28 @@ function AlgorithmArguments(props: AlgorithmArgumentsProps) {
           scrollbar lands on the card's edge and the fields' focus rings are
           not clipped. `pb-1` covers the ring under the last field; Run's
           `pt-3` makes up the rest of the gap. */}
-      <div className="flex max-h-48 flex-col gap-4 overflow-auto px-5 pt-5 pb-1">
-        {args.map((argument) => (
-          <TextInput
-            key={argument.name}
-            label={argument.name}
-            value={values[argument.name] ?? ''}
-            onChange={(value) => handleChange(argument.name, value)}
-            placeholder={argument.placeholder}
-            invalid={invalid.includes(argument.name)}
-          />
-        ))}
-      </div>
+      {args.length > 0 && (
+        <div className="flex max-h-48 flex-col gap-4 overflow-auto px-5 pt-5 pb-1">
+          {args.map((argument) => (
+            <TextInput
+              key={argument.name}
+              label={argument.name}
+              value={values[argument.name] ?? ''}
+              onChange={(value) => handleChange(argument.name, value)}
+              placeholder={argument.placeholder}
+              invalid={invalid.includes(argument.name)}
+            />
+          ))}
+        </div>
+      )}
 
-      <div className="flex flex-col px-5 pt-3 pb-5">
+      {/* With no fields above, Run takes the card's full padding instead. */}
+      <div
+        className={cn(
+          'flex flex-col px-5 pb-5',
+          args.length > 0 ? 'pt-3' : 'pt-5',
+        )}
+      >
         <Button onClick={handleRun}>
           <Icon name="play" />
           Run
