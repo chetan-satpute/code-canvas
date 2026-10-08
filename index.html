@@ -4,6 +4,46 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Paints the page dark before index.css arrives, avoiding a white flash. -->
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#0d0e1a" />
+
+    <title>Code Canvas — Interactive Algorithm Visualizer</title>
+    <meta
+      name="description"
+      content="Step through data structure algorithms like a debugger, with the highlighted line, call stack, variables and canvas moving together."
+    />
+    <meta name="author" content="Chetan Satpute" />
+
+    <!-- No canonical or og:url: every route is served this same file, so a
+         fixed URL here would mark each algorithm page as a copy of home. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Code Canvas" />
+    <meta
+      property="og:title"
+      content="Code Canvas — Interactive Algorithm Visualizer"
+    />
+    <meta
+      property="og:description"
+      content="Step through data structure algorithms like a debugger, with the highlighted line, call stack, variables and canvas moving together."
+    />
+    <meta
+      property="og:image"
+      content="https://canvas.chetansatpute.dev/icon-512.png"
+    />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="The Code Canvas icon" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- The .ico is for browsers that cannot read the SVG. Its sizes="32x32"
+         stops Chrome from choosing it over the SVG. See docs/icon.md. -->
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
     <!-- Google Fonts: Kalam, Laila, Spectral, Spectral SC, Tiro Devanagari Sanskrit, and Ubuntu Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -11,8 +51,6 @@
       href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Laila:wght@300;400;500;600;700&family=Spectral+SC:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Spectral:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,200;1,300;1,400;1,500;1,600;1,700;1,800&family=Tiro+Devanagari+Sanskrit:ital@0;1&family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap"
       rel="stylesheet"
     />
-
-    <title>Code Canvas</title>
   </head>
   <body>
     <div id="root"></div>

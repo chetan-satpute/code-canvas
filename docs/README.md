@@ -9,3 +9,4 @@ none of the context of the conversation that produced it.
 | [code-highlighting.md](code-highlighting.md) | How listings are syntax-highlighted at build time and how lines are named |
 | [canvas.md](canvas.md)                       | How nodes, edges and labels are modelled, drawn, themed and played        |
 | [engine.md](engine.md)                       | How structures, the board, tweens, operations and algorithm runs work     |
+| [icon.md](icon.md)                           | What the app icon shows, and which drawing each icon file comes from      |
