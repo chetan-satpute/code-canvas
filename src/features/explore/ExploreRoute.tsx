@@ -1,6 +1,7 @@
 import { useLoaderData } from '@tanstack/react-router';
 
 import CanvasCard from '#components/CanvasCard.tsx';
+import FadeSwap from '#components/FadeSwap.tsx';
 import TopGlow from '#components/TopGlow.tsx';
 import cn from '#utils/cn.ts';
 
@@ -16,7 +17,8 @@ import useExploreSession from './hooks/useExploreSession.ts';
 /*
  * Both views share one layout, and the canvas and the code card render
  * outside the view branch, so neither moves or remounts when a run starts or
- * stops. Only the cell under the canvas and the code card's actions swap.
+ * stops. Only the contents of the cell under the canvas and the code card's
+ * actions swap, and both fade from one to the other.
  *
  * lg+: a row of the canvas column (canvas over that cell, 3:2) and a
  * fixed-width code card beside it. The row fills the viewport without
@@ -69,21 +71,25 @@ function ExploreRoute() {
 
   const callStack = step?.callStack ?? [];
 
-  const actions = isRunning ? (
-    <RunControls
-      finished={isFinished}
-      onStop={stop}
-      onNextStep={nextStep}
-      onFinish={stop}
-    />
-  ) : (
-    <AlgorithmArguments
-      // The route is reused across algorithms, so without a key one
-      // algorithm's values and invalid marks would carry over to the next.
-      key={algorithm.id}
-      args={algorithm.args}
-      onRun={run}
-    />
+  const actions = (
+    <FadeSwap id={isRunning ? 'run' : 'arguments'} animateHeight>
+      {isRunning ? (
+        <RunControls
+          finished={isFinished}
+          onStop={stop}
+          onNextStep={nextStep}
+          onFinish={stop}
+        />
+      ) : (
+        <AlgorithmArguments
+          // The route is reused across algorithms, so without a key one
+          // algorithm's values and invalid marks would carry over to the next.
+          key={algorithm.id}
+          args={algorithm.args}
+          onRun={run}
+        />
+      )}
+    </FadeSwap>
   );
 
   return (
@@ -97,28 +103,30 @@ function ExploreRoute() {
             <CanvasCard frames={frames} />
           </div>
 
-          {isRunning ? (
-            <div className={cn(underCanvasClasses, stackAndMemoryClasses)}>
-              <div className="sm:col-span-3">
-                <CallStackCard
-                  frames={callStack.map((entry) => entry.signature)}
+          <div className={underCanvasClasses}>
+            <FadeSwap id={isRunning ? 'run' : 'structure'}>
+              {isRunning ? (
+                <div className={cn('h-full', stackAndMemoryClasses)}>
+                  <div className="sm:col-span-3">
+                    <CallStackCard
+                      frames={callStack.map((entry) => entry.signature)}
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    {/* The innermost call, which is the one running. */}
+                    <MemoryCard variables={callStack[0]?.memory ?? []} />
+                  </div>
+                </div>
+              ) : (
+                <StructureCard
+                  title={structure.title}
+                  description={structure.description}
+                  operations={structure.operations}
+                  onApply={applyOperation}
                 />
-              </div>
-              <div className="sm:col-span-2">
-                {/* The innermost call, which is the one running. */}
-                <MemoryCard variables={callStack[0]?.memory ?? []} />
-              </div>
-            </div>
-          ) : (
-            <div className={underCanvasClasses}>
-              <StructureCard
-                title={structure.title}
-                description={structure.description}
-                operations={structure.operations}
-                onApply={applyOperation}
-              />
-            </div>
-          )}
+              )}
+            </FadeSwap>
+          </div>
         </div>
 
         <div className={codeClasses}>
