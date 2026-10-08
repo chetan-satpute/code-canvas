@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router';
+import type { MouseEvent } from 'react';
 
 import type { Algorithm } from '#catalog/algorithms.ts';
 import Icon from '#components/Icon.tsx';
@@ -32,6 +33,21 @@ function HeroSection(props: HeroSectionProps) {
   // mounted at all, rather than hidden, which would keep an unseen run
   // stepping and repainting.
   const isWide = useMediaQuery('(min-width: 48rem)');
+
+  const handleBrowse = (event: MouseEvent) => {
+    if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
+      return;
+
+    event.preventDefault();
+
+    const reduceMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    document
+      .getElementById('algorithms')
+      ?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+  };
 
   return (
     <section
@@ -68,7 +84,17 @@ function HeroSection(props: HeroSectionProps) {
             </Link>
           )}
 
-          <a href="#algorithms" className={cn(ctaClasses, outlineCtaClasses)}>
+          {/* Scrolls by hand rather than following the hash. The router
+              watches the URL: a hash change it did not make reads as a back
+              or forward step, and it restores home's saved scroll position
+              over the jump. Routing the hash through it instead does nothing
+              once the URL already ends in #algorithms. The href stays for
+              opening in a new tab. */}
+          <a
+            href="#algorithms"
+            onClick={handleBrowse}
+            className={cn(ctaClasses, outlineCtaClasses)}
+          >
             Browse algorithms
             <Icon name="arrow-right" />
           </a>

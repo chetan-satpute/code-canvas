@@ -11,6 +11,7 @@
  *   @layer base    scrollbar styling, driven by the --scrollbar-* tokens
  *   @utility       no-scrollbar, for scrollers that should not show one;
  *                  lit-surface, the card surface
+ *   ::view-transition-*  the page transition between home and explore
  */
 
 @import 'tailwindcss';
@@ -600,6 +601,67 @@
       linear-gradient(#000 0 0) content-box exclude,
       linear-gradient(#000 0 0);
     pointer-events: none;
+  }
+}
+
+/* ---------- Page transition — home ↔ explore ---------- */
+
+/* The router wraps each page change in a view transition: the old page fades
+   out, then the new one fades in, with the explore page's cards scale-fading
+   as the run panels do. Sequential rather than a crossfade, for the same
+   reason as those panels: two pages dissolving through each other look
+   muddy. */
+::view-transition-old(root) {
+  animation: page-fade-out 120ms ease-in both;
+}
+
+::view-transition-new(root) {
+  animation: page-fade-in 200ms 120ms ease-out both;
+}
+
+::view-transition-old(canvas),
+::view-transition-old(under-canvas),
+::view-transition-old(code-card) {
+  animation: page-scale-fade-out 120ms ease-in both;
+}
+
+::view-transition-new(canvas),
+::view-transition-new(under-canvas),
+::view-transition-new(code-card) {
+  animation: page-scale-fade-in 200ms 120ms ease-out both;
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes page-scale-fade-out {
+  to {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
+@keyframes page-scale-fade-in {
+  from {
+    opacity: 0;
+    scale: 0.97;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

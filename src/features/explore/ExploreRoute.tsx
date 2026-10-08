@@ -40,12 +40,16 @@ const layoutClasses =
 const canvasColumnClasses =
   'contents lg:flex lg:min-w-0 lg:flex-1 lg:flex-col lg:gap-4';
 
+// The view-transition-names let the cards scale-fade on their own during the
+// page transition; see index.css.
 const canvasClasses =
-  'aspect-4/3 sm:aspect-video lg:aspect-auto lg:min-h-0 lg:flex-3';
+  'aspect-4/3 sm:aspect-video lg:aspect-auto lg:min-h-0 lg:flex-3 [view-transition-name:canvas]';
 
-const underCanvasClasses = 'order-last lg:order-none lg:min-h-0 lg:flex-2';
+const underCanvasClasses =
+  'order-last lg:order-none lg:min-h-0 lg:flex-2 [view-transition-name:under-canvas]';
 
-const codeClasses = 'lg:w-104 lg:shrink-0 xl:w-128';
+const codeClasses =
+  'lg:w-104 lg:shrink-0 xl:w-128 [view-transition-name:code-card]';
 
 // Call stack signatures need the wider share; memory holds short name/value
 // rows. `grid-cols-1` is `minmax(0, 1fr)`: without it the single column below
