@@ -46,7 +46,7 @@ Sources live in `assets/icon/` and are not served. Everything served is in
 | `public/icon-192.png`          | `assets/icon/icon.svg`          | Manifest icon.                                                 |
 | `public/icon-512.png`          | `assets/icon/icon.svg`          | Manifest icon, and the large icon in Android's install prompt. |
 | `public/icon-maskable-512.png` | `assets/icon/icon-maskable.svg` | Manifest icon that Android crops to its own shape.             |
-| `public/manifest.webmanifest`  | —                               | The app's name, its manifest icons, and its theme colors.      |
+| `public/manifest.json`         | —                               | The app's name, its manifest icons, and its theme colors.      |
 
 One drawing cannot serve every size and every mask, so there are four:
 
