@@ -1,24 +1,28 @@
 # App icon
 
-The mark is a three-node tree set like a constellation: a glowing gold root
-joined to two pearl children, on an indigo night tile.
+The mark is a three-node tree: a glowing gold root joined to two pearl
+children, on a sapphire tile.
 
 ## Why this mark
 
-The icon is chosen for how it looks and how well it fits the theme, not to
-depict the canvas. It borrows the theme's own story — deep indigo, gold
-jewelry, the ivory drape, a cosmic midnight sky — and gives it one idea from
-the product: a structure with a single node under attention, which the gold
-root carries.
+The icon is chosen for how it looks and how well it fits the theme. It
+borrows the theme's own story — sapphire, gold jewelry, the ivory drape, a
+cosmic midnight sky — and gives it one idea from the product: a structure
+with a single node under attention, which the gold root carries. The nodes
+take the canvas's node shape (`src/canvas/elements/node.ts`): equal 2:1
+rounded rectangles with a corner radius of a quarter of their height, lit
+from the top, with only the color marking the highlighted one. The lighting
+is simplified: a full-height gradient instead of the canvas's top-half sheen,
+and no hairline rim.
 
 An image file cannot read CSS custom properties, so the colors are copied from
 `src/index.css` into the drawings:
 
 | Role                           | Token                                      | Value                           |
 | ------------------------------ | ------------------------------------------ | ------------------------------- |
-| Tile, top-left to bottom-right | `--indigo-700` to `--indigo-950`           | `#2b356e` to `#0e1125`          |
-| Halo behind the tree           | `--indigo-400`                             | `#6572bd`                       |
-| Gold root, light to shade      | `--gold-100`, `--gold-300`, `--gold-600`   | `#f1eee6`, `#d5be8b`, `#97752b` |
+| Tile, top-left to bottom-right | `--sapphire-500` to `--sapphire-800`       | `#3e6dae` to `#1b3557`          |
+| Halo behind the tree           | `--sapphire-400`                           | `#5d89c5`                       |
+| Gold root, light to shade      | `--gold-200`, `--gold-400`, `--gold-600`   | `#e1d5b9`, `#cca757`, `#97752b` |
 | Glow around the root           | `--gold-300`                               | `#d5be8b`                       |
 | Pearl children, light to shade | `--pearl-25`, `--pearl-100`, `--pearl-200` | `#fcfcfa`, `#f4efe2`, `#ded5bc` |
 | Edges                          | `--pearl-100`                              | `#f4efe2`                       |
@@ -26,12 +30,11 @@ An image file cannot read CSS custom properties, so the colors are copied from
 
 `public/favicon.svg` is flat and uses its own set:
 
-| Role                           | Token                            | Value                  |
-| ------------------------------ | -------------------------------- | ---------------------- |
-| Tile, top-left to bottom-right | `--indigo-700` to `--indigo-900` | `#2b356e` to `#161b39` |
-| Root                           | `--gold-400`                     | `#cca757`              |
-| Children                       | `--pearl-100`                    | `#f4efe2`              |
-| Edges                          | `--indigo-200`                   | `#bec3dc`              |
+| Role     | Token            | Value     |
+| -------- | ---------------- | --------- |
+| Root     | `--gold-400`     | `#cca757` |
+| Children | `--pearl-100`    | `#f4efe2` |
+| Edges    | `--sapphire-200` | `#bccadf` |
 
 ## The files
 
@@ -50,14 +53,18 @@ Sources live in `assets/icon/` and are not served. Everything served is in
 
 One drawing cannot serve every size and every mask, so there are four:
 
-- `assets/icon/icon.svg` is the master: shaded spheres, the root's glow, the
-  halo and the tile's lit rim.
+- `assets/icon/icon.svg` is the master: top-lit nodes, the root's glow (a
+  blurred rounded rectangle, so it follows the root's shape), the halo and
+  the tile's lit rim.
 - `public/favicon.svg` is a separate drawing for 16 to 48 pixels, which is
   also all a browser tab ever shows of the SVG. The master's glow turns to a
   grey smudge there. This one is flat: no glow, halo or rim, solid
-  `--gold-400` and `--pearl-100` nodes, larger nodes, edges over twice as
-  thick in `--indigo-200`, and a tile that ends at `--indigo-900` rather than
-  `--indigo-950`, so its lower corner does not sink into a dark tab bar.
+  `--gold-400` and `--pearl-100` nodes, edges over twice as thick in
+  `--sapphire-200`, and no tile, so the tree spans the whole square and the
+  tab shows just the tree. Its colors are tuned for a dark tab bar; on a
+  light one the pearl children and edges are faint. The device icons keep
+  the tile, since a home screen or install prompt needs the icon to bring its
+  own background.
 - `assets/icon/icon-apple.svg` is the master without the tile's rounded
   corners or rim. iOS applies its own mask, and our corners inside it would
   leave dark slivers.
